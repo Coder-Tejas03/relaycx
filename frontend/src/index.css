@@ -1,0 +1,121 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* CSS Custom Properties — Design Tokens */
+:root {
+  /* Backgrounds */
+  --bg-base: #09090B;       /* Zinc 950 */
+  --bg-surface: #18181B;    /* Zinc 900 */
+  --bg-subcard: #27272A;    /* Zinc 800 */
+  --border: #27272A;        /* Zinc 800 */
+
+  /* Brand */
+  --accent: #6366F1;        /* Indigo 500 */
+  --accent-hover: #4F46E5;  /* Indigo 600 */
+
+  /* Text */
+  --text-primary: #F4F4F5;  /* Zinc 100 */
+  --text-secondary: #A1A1AA;/* Zinc 400 */
+  --text-tertiary: #71717A; /* Zinc 500 */
+
+  /* Status Colors (for badges) */
+  --status-open-bg: rgba(99, 102, 241, 0.12);
+  --status-open-text: #818CF8;
+  --status-open-border: rgba(99, 102, 241, 0.25);
+
+  --status-inprogress-bg: rgba(245, 158, 11, 0.12);
+  --status-inprogress-text: #FBBF24;
+  --status-inprogress-border: rgba(245, 158, 11, 0.25);
+
+  --status-closed-bg: rgba(113, 113, 122, 0.15);
+  --status-closed-text: #A1A1AA;
+  --status-closed-border: rgba(113, 113, 122, 0.3);
+
+  /* shadcn semantic tokens mapped to dark Zinc defaults */
+  --background: #09090B;
+  --foreground: #F4F4F5;
+  --card: #18181B;
+  --card-foreground: #F4F4F5;
+  --popover: #18181B;
+  --popover-foreground: #F4F4F5;
+  --primary: #6366F1;
+  --primary-foreground: #FFFFFF;
+  --secondary: #27272A;
+  --secondary-foreground: #F4F4F5;
+  --muted: #27272A;
+  --muted-foreground: #A1A1AA;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --input: #27272A;
+  --ring: #6366F1;
+  --radius: 0.5rem;
+}
+
+/* Set app-wide dark background and font */
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.015em;
+  min-height: 100vh;
+}
+
+/* Utility: Monospace for IDs and timestamps */
+.font-mono-id {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+}
+
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.animate-border-beam {
+  animation: border-beam var(--duration, 12s) infinite linear;
+}
+
+@keyframes shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+  }
+}
+
+@keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+  }
+  15%, 35% {
+    transform: translateZ(0) rotate(90deg);
+  }
+  65%, 85% {
+    transform: translateZ(0) rotate(270deg);
+  }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+  }
+}
+
+.animate-shimmer-slide {
+  animation: shimmer-slide var(--speed, 3s) ease-in-out infinite alternate;
+}
+
+.animate-spin-around {
+  animation: spin-around calc(var(--speed, 3s) * 2) infinite linear;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+  }
+}

@@ -1,0 +1,102 @@
+import { API_BASE_URL } from "@/constants";
+
+const BASE = `${API_BASE_URL}/api/tickets`;
+
+/**
+ * Service encapsulating all communication with the RelayCX backend API.
+ * Components and hooks import from here, never calling fetch() directly.
+ */
+export const ticketApi = {
+  /**
+   * Fetch all tickets with optional filtering by status and search keyword.
+   * @param {string|null} status - "Open", "In Progress", "Closed", or null/"All" for all
+   * @param {string} search - Substring to search across ticket fields
+   * @returns {Promise<Array<object>>} List of tickets
+   */
+  getAll: async (status = null, search = "") => {
+    const params = new URLSearchParams();
+    if (status && status !== "All") {
+      params.append("status", status);
+    }
+    if (search && search.trim() !== "") {
+      params.append("search", search.trim());
+    }
+
+    const query = params.toString() ? `?${params.toString()}` : "";
+    const response = await fetch(`${BASE}/${query}`, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `Failed to fetch tickets (${response.status})`);
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Fetch complete details for a single ticket including chronological internal notes.
+   * @param {string} ticketId - e.g. "TKT-C74B9E"
+   * @returns {Promise<object>} Detailed ticket object
+   */
+  getById: async (ticketId) => {
+    const response = await fetch(`${BASE}/${encodeURIComponent(ticketId)}`, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `Failed to fetch ticket ${ticketId} (${response.status})`);
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Create a new ticket.
+   * @param {object} data - { customer_name, customer_email, subject, description }
+   * @returns {Promise<object>} Created ticket response { ticket_id, created_at }
+   */
+  create: async (data) => {
+    const response = await fetch(`${BASE}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `Failed to create ticket (${response.status})`);
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Update ticket status and/or append an internal note.
+   * @param {string} ticketId - e.g. "TKT-C74B9E"
+   * @param {object} data - { status?, note_text? }
+   * @returns {Promise<object>} Updated ticket response { updated_at }
+   */
+  update: async (ticketId, data) => {
+    const response = await fetch(`${BASE}/${encodeURIComponent(ticketId)}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `Failed to update ticket ${ticketId} (${response.status})`);
+    }
+
+    return response.json();
+  },
+};
