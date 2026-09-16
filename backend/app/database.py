@@ -8,16 +8,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from app.config import settings
 
-# Determine database connection URL:
+# Determine database connection URL and connection arguments:
 # Use Turso if configured, otherwise fallback to local SQLite.
+connect_args = {"check_same_thread": False}
+
 if settings.TURSO_DATABASE_URL and settings.TURSO_AUTH_TOKEN:
-    db_url = f"sqlite+{settings.TURSO_DATABASE_URL}/?authToken={settings.TURSO_AUTH_TOKEN}&secure=true"
+    db_url = f"sqlite+{settings.TURSO_DATABASE_URL}/?secure=true"
+    connect_args["auth_token"] = settings.TURSO_AUTH_TOKEN
 else:
     db_url = settings.DATABASE_URL
-
-connect_args = {}
-if db_url.startswith("sqlite"):
-    connect_args["check_same_thread"] = False
 
 engine = create_engine(db_url, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
