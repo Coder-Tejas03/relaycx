@@ -5,7 +5,7 @@ Ensures strict type-safety, automatic 422 errors on invalid data, and ORM mappin
 
 from datetime import datetime, timezone
 from typing import Annotated, Literal, Optional
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, PlainSerializer
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, PlainSerializer, field_validator
 
 
 def serialize_utc_datetime(dt: datetime) -> str:
@@ -58,9 +58,15 @@ class NoteResponse(BaseModel):
     id: int
     ticket_id: str
     note_text: str
+    event_type: str = "NOTE_ADDED"
     created_at: UtcDateTime
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_validator("event_type", mode="before")
+    @classmethod
+    def default_event_type(cls, v):
+        return v or "NOTE_ADDED"
 
 
 class TicketDetailResponse(BaseModel):

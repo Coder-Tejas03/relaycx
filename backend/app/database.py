@@ -4,7 +4,7 @@ Provides the get_db dependency for request session lifecycle.
 """
 
 from collections.abc import Generator
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from app.config import settings
 
@@ -21,6 +21,19 @@ else:
 engine = create_engine(db_url, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+
+def ensure_schema():
+    """Ensure newly added columns exist in existing SQLite databases."""
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("PRAGMA table_info(notes)")).fetchall()
+            cols = [r[1] for r in result]
+            if cols and "event_type" not in cols:
+                conn.execute(text("ALTER TABLE notes ADD COLUMN event_type VARCHAR(50) DEFAULT 'NOTE_ADDED'"))
+                conn.commit()
+    except Exception:
+        pass
 
 
 def get_db() -> Generator[Session, None, None]:

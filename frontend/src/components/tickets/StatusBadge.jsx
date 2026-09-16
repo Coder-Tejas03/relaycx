@@ -3,7 +3,7 @@ import { STATUS_STYLES } from "@/constants";
 import { cn } from "@/lib/utils";
 
 /**
- * Renders a color-coded pill badge for a ticket status.
+ * Renders a color-coded pill badge for a ticket status with subtle monochrome container and semantic dot.
  * @param {object} props
  * @param {"Open" | "In Progress" | "Closed"} props.status - Current status string
  * @param {string} [props.className] - Additional class names
@@ -25,7 +25,7 @@ export default function StatusBadge({ status = "Open", className }) {
     >
       <span
         className="w-1.5 h-1.5 rounded-full shrink-0"
-        style={{ backgroundColor: styles.text }}
+        style={{ backgroundColor: styles.dot || styles.text }}
       />
       {status}
     </span>

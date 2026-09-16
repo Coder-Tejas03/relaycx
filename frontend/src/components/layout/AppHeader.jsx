@@ -1,83 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { SunIcon, MoonIcon } from "@animateicons/react/lucide";
-import ShimmerButton from "@/components/magicui/ShimmerButton";
-import { cn } from "@/lib/utils";
+import { Plus, Menu, X } from "lucide-react";
 
 /**
- * Top navigation bar rendered across pages.
- * Displays logo, status indicator, ticket count, theme toggle, and CTA button.
+ * Top navigation bar rendered within AppShell.
+ * Ultra-clean, distraction-free monochrome header with logo and primary CTA.
  * @param {object} props
- * @param {number|null} [props.ticketCount] - Optional total count of tickets to display in header
+ * @param {boolean} [props.mobileMenuOpen] - State of mobile sidebar
+ * @param {function(): void} [props.onToggleMobileMenu] - Toggle handler for mobile sidebar
  */
-export function AppHeader({ ticketCount = null }) {
-  const [theme, setTheme] = useState("dark");
-
-  useEffect(() => {
-    const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
-    setTheme(currentTheme);
-  }, []);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    document.documentElement.setAttribute("data-theme", nextTheme);
-  };
-
+export function AppHeader({ mobileMenuOpen = false, onToggleMobileMenu }) {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md transition-colors">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Left: Logo & Live Ticket Count */}
+    <header className="sticky top-0 z-40 w-full h-14 border-b border-zinc-800/80 bg-black/90 backdrop-blur-md transition-colors">
+      <div className="flex h-full w-full items-center justify-between px-4 sm:px-6">
+        {/* Left: Mobile menu toggle + Clean Logo */}
         <div className="flex items-center gap-3">
+          {onToggleMobileMenu && (
+            <button
+              type="button"
+              onClick={onToggleMobileMenu}
+              aria-label="Toggle navigation menu"
+              className="flex md:hidden size-8 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-white transition-colors"
+            >
+              {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
+          )}
+
           <Link
             to="/"
-            className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-white hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2.5 text-sm font-semibold tracking-tight text-white hover:opacity-90 transition-opacity"
           >
-            <span className="flex size-8 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold shadow-md shadow-indigo-500/30">
+            {/* Vercel-style monochrome [R] block */}
+            <span className="flex size-6 items-center justify-center rounded-md bg-zinc-900 border border-zinc-800 text-xs font-mono font-bold text-zinc-100 shadow-sm">
               R
             </span>
-            <span>
-              Relay<span className="text-indigo-400">CX</span>
-            </span>
+            <span>RelayCX</span>
           </Link>
-
-          <span className="hidden sm:inline-flex rounded-full border border-zinc-700/60 bg-zinc-800/60 px-2 py-0.5 text-xs text-zinc-400">
-            v1.0 MVP
-          </span>
-
-          {ticketCount !== null && ticketCount !== undefined && (
-            <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-xs font-medium text-indigo-300 animate-in fade-in duration-200">
-              {ticketCount} {ticketCount === 1 ? "ticket" : "tickets"}
-            </span>
-          )}
         </div>
 
-        {/* Right: Theme Toggle & Create Ticket CTA */}
+        {/* Right: Focused Primary CTA */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="flex size-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/80 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-all duration-200 cursor-pointer overflow-hidden"
+          <Link
+            to="/tickets/new"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors select-none shadow-sm cursor-pointer shrink-0"
           >
-            <span
-              className={cn(
-                "inline-flex items-center justify-center transition-all duration-500 ease-in-out",
-                theme === "dark" ? "rotate-0" : "rotate-180"
-              )}
-            >
-              {theme === "dark" ? (
-                <SunIcon size={18} />
-              ) : (
-                <MoonIcon size={18} />
-              )}
-            </span>
-          </button>
-
-          <Link to="/tickets/new">
-            <ShimmerButton className="h-9 px-3.5 text-xs font-semibold shadow-indigo-500/20">
-              + Create Ticket
-            </ShimmerButton>
+            <Plus size={14} strokeWidth={2.5} />
+            <span>Create Ticket</span>
           </Link>
         </div>
       </div>

@@ -1,10 +1,10 @@
 import React from "react";
 import { ZapIcon } from "@animateicons/react/lucide";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 /**
  * Console for writing internal notes with dual action buttons (Add Note / Add Note & Resolve).
+ * High-contrast Vercel monochrome action buttons.
  * @param {object} props
  * @param {string} props.noteText - Controlled text content
  * @param {function(string): void} props.onNoteChange - Text change callback
@@ -36,7 +36,7 @@ export default function NoteConsole({
       <div className="space-y-1.5">
         <label
           htmlFor="internal-note-input"
-          className="text-xs font-semibold text-zinc-300"
+          className="text-xs font-medium text-zinc-300"
         >
           Add Internal Note
         </label>
@@ -44,49 +44,48 @@ export default function NoteConsole({
           id="internal-note-input"
           value={noteText}
           onChange={(e) => onNoteChange(e.target.value)}
-          placeholder="Document investigation progress, customer communication, or resolution details..."
+          placeholder="Document investigation progress, customer communication, or resolution steps..."
           disabled={isSubmitting}
           rows={3}
-          className="w-full resize-y min-h-[90px] rounded-xl bg-zinc-900/80 border-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-indigo-500/40 text-sm"
+          className="w-full resize-y min-h-[85px] rounded-lg bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-zinc-600/40 text-xs sm:text-sm"
         />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-        <span className="text-[11px] text-zinc-500">
+        <span className="text-[11px] font-mono text-zinc-500">
           {currentStatus === "Open"
-            ? "💡 Adding a note auto-advances status to 'In Progress'"
+            ? "💡 Note submission auto-advances status to 'In Progress'"
             : currentStatus === "Closed"
-            ? "🔒 Ticket is closed — Notes logged here are preserved for audit without reopening"
+            ? "🔒 Ticket is closed — Note recorded for audit log"
             : "Status remains 'In Progress'"}
         </span>
 
         <div className="flex items-center gap-2.5 ml-auto">
-          {/* Add Note Button */}
-          <Button
+          {/* Resolve & Close Quick Action */}
+          {currentStatus !== "Closed" && (
+            <button
+              type="button"
+              onClick={onAddNoteAndResolve}
+              disabled={isDisabled}
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-zinc-900 border border-zinc-800 hover:border-emerald-500/40 text-emerald-400 hover:text-emerald-300 hover:bg-zinc-850 text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none"
+            >
+              <ZapIcon size={13} className="text-emerald-400" />
+              <span>{isSubmitting ? "Resolving..." : "Add & Resolve"}</span>
+            </button>
+          )}
+
+          {/* Primary Crisp White Button */}
+          <button
             type="submit"
             disabled={isDisabled}
-            variant="outline"
-            size="sm"
-            className="border-zinc-700 bg-zinc-800/80 hover:bg-zinc-800 hover:text-white text-zinc-200 text-xs font-medium cursor-pointer"
+            className="inline-flex items-center justify-center h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none shadow-sm"
           >
             {isSubmitting
               ? "Saving..."
               : currentStatus === "Closed"
               ? "Add Audit Note"
               : "Add Note"}
-          </Button>
-
-          {/* Add Note & Resolve Button */}
-          <Button
-            type="button"
-            onClick={onAddNoteAndResolve}
-            disabled={isDisabled || currentStatus === "Closed"}
-            size="sm"
-            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold gap-1.5 shadow-sm shadow-emerald-600/30 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ZapIcon size={14} className="text-emerald-100" />
-            {isSubmitting ? "Resolving..." : "Add Note & Resolve"}
-          </Button>
+          </button>
         </div>
       </div>
     </form>

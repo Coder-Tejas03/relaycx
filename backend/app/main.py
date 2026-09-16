@@ -6,7 +6,7 @@ Configures CORS, table initialization on startup, and registers API routers.
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base
+from app.database import engine, Base, ensure_schema
 from app import routes
 
 
@@ -14,9 +14,10 @@ from app import routes
 async def lifespan(app: FastAPI):
     """
     Application lifespan context manager.
-    Ensures database tables are created on startup.
+    Ensures database tables and migrations are initialized on startup.
     """
     Base.metadata.create_all(bind=engine)
+    ensure_schema()
     yield
 
 

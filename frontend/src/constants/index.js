@@ -7,16 +7,19 @@ export const STATUS_STYLES = {
     bg: "var(--status-open-bg)",
     text: "var(--status-open-text)",
     border: "var(--status-open-border)",
+    dot: "var(--status-open-dot)",
   },
   "In Progress": {
     bg: "var(--status-inprogress-bg)",
     text: "var(--status-inprogress-text)",
     border: "var(--status-inprogress-border)",
+    dot: "var(--status-inprogress-dot)",
   },
   "Closed": {
     bg: "var(--status-closed-bg)",
     text: "var(--status-closed-text)",
     border: "var(--status-closed-border)",
+    dot: "var(--status-closed-dot)",
   },
 };
 

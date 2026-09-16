@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AppHeader from "@/components/layout/AppHeader";
 import BlurFade from "@/components/magicui/BlurFade";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ticketApi } from "@/services/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Intake form page for creating a new support ticket.
+ * Intake form page for creating a new support ticket within AppShell.
  * Performs client-side validation, connects to POST /api/tickets,
  * prevents double-submission, and redirects to the queue on success.
  */
@@ -121,7 +119,7 @@ export default function CreateTicketPage() {
       };
 
       const response = await ticketApi.create(payload);
-      toast.success(`Ticket ${response.ticket_id} created!`);
+      toast.success(`Ticket ${response.ticket_id} created successfully!`);
       navigate("/");
     } catch (err) {
       toast.error(err.message || "Failed to create ticket. Please try again.");
@@ -131,188 +129,188 @@ export default function CreateTicketPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
-      <AppHeader />
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-4xl mx-auto">
+      {/* Crisp Breadcrumb Navigation */}
+      <BlurFade delay={0.06}>
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft size={13} />
+            <span>Tickets</span>
+          </Link>
+          <span className="text-zinc-600 select-none">/</span>
+          <span className="text-zinc-200 font-medium">
+            New Ticket
+          </span>
+        </nav>
+      </BlurFade>
 
-      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
-        <BlurFade delay={0.08}>
-          <div>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 transition-colors hover:text-white group"
-            >
-              <span className="transition-transform group-hover:-translate-x-0.5">←</span>
-              Back to Tickets Queue
-            </Link>
+      {/* Structured Form Workbench Card */}
+      <BlurFade delay={0.12}>
+        <div className="max-w-2xl relative overflow-hidden rounded-xl border border-white/[0.09] bg-[#212124] p-6 sm:p-8 shadow-2xl">
+          {/* Subtle Vercel specular highlight at top edge */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-zinc-600/50 to-transparent" />
+
+          {/* Form Header */}
+          <div className="border-b border-white/[0.08] pb-5 mb-6">
+            <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-white">
+              Create Support Ticket
+            </h1>
+            <p className="text-xs text-zinc-400 mt-1">
+              Direct customer intake workbench. A deterministic ID will be generated automatically.
+            </p>
           </div>
-        </BlurFade>
 
-        <BlurFade delay={0.16}>
-          <Card className="border-zinc-800/80 bg-zinc-900/60 shadow-2xl backdrop-blur-sm">
-            <CardHeader className="border-b border-zinc-800/80 pb-5">
-              <CardTitle className="text-xl font-bold tracking-tight text-white">
-                Create New Support Ticket
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm text-zinc-400 mt-1">
-                Log an incoming customer inquiry. Provide accurate details so the support team can triage effectively.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="pt-6">
-              <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                {/* 2-Column Grid: Customer Name & Customer Email */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor="customer_name"
-                      className="text-xs font-semibold text-zinc-300"
-                    >
-                      Customer Name <span className="text-indigo-400">*</span>
-                    </label>
-                    <Input
-                      id="customer_name"
-                      name="customer_name"
-                      type="text"
-                      placeholder="e.g. Aarav Sharma"
-                      value={formData.customer_name}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={isSubmitting}
-                      className={cn(
-                        "h-10 bg-zinc-950/60 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-indigo-500/40 text-sm",
-                        touched.customer_name && errors.customer_name && "border-red-500/80 focus-visible:ring-red-500/40"
-                      )}
-                    />
-                    {touched.customer_name && errors.customer_name && (
-                      <p className="text-[11px] text-red-400 font-medium">
-                        {errors.customer_name}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor="customer_email"
-                      className="text-xs font-semibold text-zinc-300"
-                    >
-                      Customer Email <span className="text-indigo-400">*</span>
-                    </label>
-                    <Input
-                      id="customer_email"
-                      name="customer_email"
-                      type="email"
-                      placeholder="e.g. aarav@example.com"
-                      value={formData.customer_email}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={isSubmitting}
-                      className={cn(
-                        "h-10 bg-zinc-950/60 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-indigo-500/40 text-sm",
-                        (touched.customer_email || formData.customer_email.trim().length > 0) && errors.customer_email && "border-red-500/80 focus-visible:ring-red-500/40"
-                      )}
-                    />
-                    {(touched.customer_email || formData.customer_email.trim().length > 0) && errors.customer_email && (
-                      <p className="text-[11px] text-red-400 font-medium">
-                        {errors.customer_email}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Subject */}
-                <div className="space-y-1.5">
-                  <label
-                    htmlFor="subject"
-                    className="text-xs font-semibold text-zinc-300"
-                  >
-                    Subject <span className="text-indigo-400">*</span>
-                  </label>
-                  <Input
-                    id="subject"
-                    name="subject"
-                    type="text"
-                    placeholder="Brief summary of the issue..."
-                    value={formData.subject}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isSubmitting}
-                    className={cn(
-                      "h-10 bg-zinc-950/60 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-indigo-500/40 text-sm",
-                      touched.subject && errors.subject && "border-red-500/80 focus-visible:ring-red-500/40"
-                    )}
-                  />
-                  {touched.subject && errors.subject && (
-                    <p className="text-[11px] text-red-400 font-medium">
-                      {errors.subject}
-                    </p>
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
+            {/* 2-Column Grid: Customer Name & Customer Email */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="customer_name"
+                  className="text-xs font-medium text-zinc-300"
+                >
+                  Customer Name <span className="text-zinc-500">*</span>
+                </label>
+                <Input
+                  id="customer_name"
+                  name="customer_name"
+                  type="text"
+                  placeholder="e.g. Aarav Sharma"
+                  value={formData.customer_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={isSubmitting}
+                  className={cn(
+                    "h-9 bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500/40 text-xs sm:text-sm",
+                    touched.customer_name && errors.customer_name && "border-red-500/80 focus-visible:ring-red-500/40"
                   )}
-                </div>
+                />
+                {touched.customer_name && errors.customer_name && (
+                  <p className="text-[11px] text-red-400 font-medium">
+                    {errors.customer_name}
+                  </p>
+                )}
+              </div>
 
-                {/* Description */}
-                <div className="space-y-1.5">
-                  <label
-                    htmlFor="description"
-                    className="text-xs font-semibold text-zinc-300"
-                  >
-                    Issue Description <span className="text-indigo-400">*</span>
-                  </label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    rows={5}
-                    placeholder="Provide detailed description of the inquiry, steps to reproduce, or requested assistance..."
-                    value={formData.description}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isSubmitting}
-                    className={cn(
-                      "bg-zinc-950/60 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-indigo-500/40 text-sm resize-y min-h-[120px]",
-                      touched.description && errors.description && "border-red-500/80 focus-visible:ring-red-500/40"
-                    )}
-                  />
-                  {touched.description && errors.description && (
-                    <p className="text-[11px] text-red-400 font-medium">
-                      {errors.description}
-                    </p>
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="customer_email"
+                  className="text-xs font-medium text-zinc-300"
+                >
+                  Customer Email <span className="text-zinc-500">*</span>
+                </label>
+                <Input
+                  id="customer_email"
+                  name="customer_email"
+                  type="email"
+                  placeholder="e.g. aarav@example.com"
+                  value={formData.customer_email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={isSubmitting}
+                  className={cn(
+                    "h-9 bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500/40 text-xs sm:text-sm",
+                    (touched.customer_email || formData.customer_email.trim().length > 0) && errors.customer_email && "border-red-500/80 focus-visible:ring-red-500/40"
                   )}
-                </div>
+                />
+                {(touched.customer_email || formData.customer_email.trim().length > 0) && errors.customer_email && (
+                  <p className="text-[11px] text-red-400 font-medium">
+                    {errors.customer_email}
+                  </p>
+                )}
+              </div>
+            </div>
 
-                {/* Submit button & actions */}
-                <div className="pt-3 flex items-center justify-end gap-3">
-                  <Link to="/">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={isSubmitting}
-                      className="border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white text-xs"
-                    >
-                      Cancel
-                    </Button>
-                  </Link>
+            {/* Subject */}
+            <div className="space-y-1.5">
+              <label
+                htmlFor="subject"
+                className="text-xs font-medium text-zinc-300"
+              >
+                Subject <span className="text-zinc-500">*</span>
+              </label>
+              <Input
+                id="subject"
+                name="subject"
+                type="text"
+                placeholder="Brief summary of the issue..."
+                value={formData.subject}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                disabled={isSubmitting}
+                className={cn(
+                  "h-9 bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500/40 text-xs sm:text-sm",
+                  touched.subject && errors.subject && "border-red-500/80 focus-visible:ring-red-500/40"
+                )}
+              />
+              {touched.subject && errors.subject && (
+                <p className="text-[11px] text-red-400 font-medium">
+                  {errors.subject}
+                </p>
+              )}
+            </div>
 
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-6 shadow-md shadow-indigo-600/30 cursor-pointer disabled:opacity-50"
-                  >
-                    {isSubmitting ? (
-                      <span className="inline-flex items-center gap-2">
-                        <svg className="animate-spin h-3.5 w-3.5 text-white" viewBox="0 0 24 24" fill="none">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                        </svg>
-                        Creating Ticket...
-                      </span>
-                    ) : (
-                      "Create Ticket"
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </BlurFade>
-      </main>
+            {/* Description */}
+            <div className="space-y-1.5">
+              <label
+                htmlFor="description"
+                className="text-xs font-medium text-zinc-300"
+              >
+                Issue Description <span className="text-zinc-500">*</span>
+              </label>
+              <Textarea
+                id="description"
+                name="description"
+                rows={5}
+                placeholder="Provide detailed description of the inquiry, steps to reproduce, or requested assistance..."
+                value={formData.description}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                disabled={isSubmitting}
+                className={cn(
+                  "bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500/40 text-xs sm:text-sm resize-y min-h-[110px]",
+                  touched.description && errors.description && "border-red-500/80 focus-visible:ring-red-500/40"
+                )}
+              />
+              {touched.description && errors.description && (
+                <p className="text-[11px] text-red-400 font-medium">
+                  {errors.description}
+                </p>
+              )}
+            </div>
+
+            {/* Form Actions with Vercel Buttons */}
+            <div className="pt-4 border-t border-white/[0.08] flex items-center justify-end gap-3">
+              <Link
+                to="/"
+                className="inline-flex items-center justify-center h-8 px-3.5 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white text-xs font-medium transition-colors"
+              >
+                Cancel
+              </Link>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="inline-flex items-center justify-center h-8 px-4 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors select-none shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? (
+                  <span className="inline-flex items-center gap-2">
+                    <svg className="animate-spin h-3.5 w-3.5 text-black" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Creating Ticket...
+                  </span>
+                ) : (
+                  "Create Ticket"
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </BlurFade>
     </div>
   );
 }

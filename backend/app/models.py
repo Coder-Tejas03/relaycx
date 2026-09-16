@@ -35,7 +35,7 @@ class Ticket(Base):
         "Note",
         back_populates="ticket",
         cascade="all, delete-orphan",
-        order_by="Note.created_at.asc()"
+        order_by="[Note.created_at.asc(), Note.id.asc()]"
     )
 
 
@@ -48,6 +48,7 @@ class Note(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     ticket_id = Column(String(32), ForeignKey("tickets.ticket_id", ondelete="CASCADE"), nullable=False, index=True)
     note_text = Column(Text, nullable=False)
+    event_type = Column(String(50), nullable=True, default="NOTE_ADDED")
     created_at = Column(DateTime, nullable=False, default=utc_now)
 
     # Back reference to the parent ticket

@@ -6,6 +6,7 @@ const FILTER_OPTIONS = ["All", ...TICKET_STATUSES];
 
 /**
  * Filter pill group for toggling ticket queue status.
+ * Styled as a sleek monochrome segmented control.
  * @param {object} props
  * @param {string} props.activeFilter - "All" | "Open" | "In Progress" | "Closed"
  * @param {function(string): void} props.onChange - Callback when filter is clicked
@@ -17,7 +18,7 @@ export default function StatusFilter({
   className,
 }) {
   return (
-    <div className={cn("inline-flex items-center gap-1.5 p-1 bg-zinc-900/60 rounded-xl border border-zinc-800/80", className)}>
+    <div className={cn("inline-flex items-center gap-1 p-1 bg-[#17171A] rounded-lg border border-white/[0.09]", className)}>
       {FILTER_OPTIONS.map((filter) => {
         const isActive = activeFilter === filter;
         return (
@@ -26,10 +27,10 @@ export default function StatusFilter({
             type="button"
             onClick={() => onChange(filter)}
             className={cn(
-              "px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer select-none",
+              "px-3 py-1 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer select-none",
               isActive
-                ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
+                ? "bg-zinc-800 text-white shadow-sm border border-zinc-700/60"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60"
             )}
           >
             {filter}

@@ -86,3 +86,18 @@ export function formatDateTime(dateInput) {
     minute: "2-digit",
   });
 }
+
+/**
+ * Formats an ISO date string into time only (e.g. "2:41 PM").
+ * @param {string|Date} dateInput
+ * @returns {string} Formatted time string
+ */
+export function formatTimeOnly(dateInput) {
+  const date = parseUtcDate(dateInput);
+  if (!date) return "";
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}

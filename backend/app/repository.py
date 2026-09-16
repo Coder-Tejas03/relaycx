@@ -74,20 +74,36 @@ def update_ticket(
     db: Session,
     ticket: Ticket,
     new_status: Optional[str] = None,
-    note_text: Optional[str] = None
+    note_text: Optional[str] = None,
+    event_type: str = "NOTE_ADDED",
+    status_change_note_text: Optional[str] = None,
 ) -> tuple[Ticket, Optional[Note]]:
     """
-    Update ticket status and/or append an internal note, updating updated_at timestamp.
+    Update ticket status and/or append internal notes, updating updated_at timestamp.
+    - If status_change_note_text is provided, persists a synthetic STATUS_CHANGE note.
+    - If note_text is provided, persists a note with event_type (default NOTE_ADDED).
+    - Returns updated ticket and the primary created note (user note if present, else status note).
     """
     created_note: Optional[Note] = None
+    status_note: Optional[Note] = None
 
     if new_status:
         ticket.status = new_status
+
+    if status_change_note_text:
+        status_note = Note(
+            ticket_id=ticket.ticket_id,
+            note_text=status_change_note_text,
+            event_type="STATUS_CHANGE",
+            created_at=utc_now(),
+        )
+        db.add(status_note)
 
     if note_text and note_text.strip():
         created_note = Note(
             ticket_id=ticket.ticket_id,
             note_text=note_text.strip(),
+            event_type=event_type,
             created_at=utc_now(),
         )
         db.add(created_note)
@@ -95,7 +111,10 @@ def update_ticket(
     ticket.updated_at = utc_now()
     db.commit()
     db.refresh(ticket)
+    if status_note:
+        db.refresh(status_note)
     if created_note:
         db.refresh(created_note)
 
-    return ticket, created_note
+    primary_note = created_note if created_note else status_note
+    return ticket, primary_note

@@ -99,6 +99,8 @@ def update_ticket_data(
             detail="At least one of 'status' or 'note_text' must be provided"
         )
 
+    old_status = ticket.status
+
     # Determine target status according to state machine rules
     if has_status:
         # Explicit status selection (ToggleGroup or Add Note & Resolve)
@@ -112,11 +114,16 @@ def update_ticket_data(
     else:
         target_status = ticket.status
 
+    status_changed = (target_status != old_status)
+    status_change_text = f"{old_status} → {target_status}" if status_changed else None
+
     updated_ticket, created_note = repository.update_ticket(
         db=db,
         ticket=ticket,
         new_status=target_status,
-        note_text=update_request.note_text
+        note_text=update_request.note_text,
+        event_type="NOTE_ADDED",
+        status_change_note_text=status_change_text,
     )
 
     note_resp = NoteResponse.model_validate(created_note) if created_note else None

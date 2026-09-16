@@ -1,93 +1,76 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
 
-/* CSS Custom Properties — Design Tokens */
+/* CSS Custom Properties — OpenAI/Vercel Depth Design Tokens */
 :root {
-  /* Backgrounds */
-  --bg-base: #09090B;       /* Zinc 950 */
-  --bg-surface: #18181B;    /* Zinc 900 */
-  --bg-subcard: #27272A;    /* Zinc 800 */
-  --border: #27272A;        /* Zinc 800 */
+  /* Backgrounds: 3-Tier Depth Architecture */
+  --bg-base: #000000;       /* Pitch Black frame (Sidebar & Header) */
+  --bg-canvas: #1B1B1E;     /* Noticeably lighter charcoal workbench canvas */
+  --bg-surface: #212124;    /* Elevated card surface (#212121 per color picker) */
+  --bg-subcard: #17171A;    /* Recessed inputs and inner elements */
+  --border: rgba(255, 255, 255, 0.09); /* 1px subtle crisp border */
+  --border-subtle: rgba(255, 255, 255, 0.06);
 
-  /* Brand */
-  --accent: #6366F1;        /* Indigo 500 */
-  --accent-hover: #4F46E5;  /* Indigo 600 */
+  /* Primary Action Tokens */
+  --cta-bg: #FFFFFF;
+  --cta-text: #000000;
+  --cta-hover: #E4E4E7;
 
   /* Text */
-  --text-primary: #F4F4F5;  /* Zinc 100 */
+  --text-primary: #EDEDED;  /* Crisp Off-White */
   --text-secondary: #A1A1AA;/* Zinc 400 */
   --text-tertiary: #71717A; /* Zinc 500 */
 
-  /* Status Colors (for badges) */
-  --status-open-bg: rgba(99, 102, 241, 0.12);
-  --status-open-text: #818CF8;
-  --status-open-border: rgba(99, 102, 241, 0.25);
+  /* Semantic Status Dots & Pills (Monochrome badge + semantic pip) */
+  --status-open-bg: #17171A;
+  --status-open-text: #D4D4D8;
+  --status-open-border: rgba(255, 255, 255, 0.09);
+  --status-open-dot: #3B82F6; /* Blue-500 */
 
-  --status-inprogress-bg: rgba(245, 158, 11, 0.12);
-  --status-inprogress-text: #FBBF24;
-  --status-inprogress-border: rgba(245, 158, 11, 0.25);
+  --status-inprogress-bg: #17171A;
+  --status-inprogress-text: #D4D4D8;
+  --status-inprogress-border: rgba(255, 255, 255, 0.09);
+  --status-inprogress-dot: #F59E0B; /* Amber-500 */
 
-  --status-closed-bg: rgba(113, 113, 122, 0.15);
-  --status-closed-text: #A1A1AA;
-  --status-closed-border: rgba(113, 113, 122, 0.3);
+  --status-closed-bg: #141416;
+  --status-closed-text: #71717A;
+  --status-closed-border: rgba(255, 255, 255, 0.06);
+  --status-closed-dot: #71717A; /* Zinc-500 */
 
-  /* shadcn semantic tokens mapped to dark Zinc defaults */
-  --background: #09090B;
-  --foreground: #F4F4F5;
-  --card: #18181B;
-  --card-foreground: #F4F4F5;
-  --popover: #18181B;
-  --popover-foreground: #F4F4F5;
-  --primary: #6366F1;
-  --primary-foreground: #FFFFFF;
-  --secondary: #27272A;
-  --secondary-foreground: #F4F4F5;
-  --muted: #27272A;
+  /* shadcn semantic tokens mapped to pure dark monochrome */
+  --background: #1B1B1E;
+  --foreground: #EDEDED;
+  --card: #212124;
+  --card-foreground: #EDEDED;
+  --popover: #212124;
+  --popover-foreground: #EDEDED;
+  --primary: #FFFFFF;
+  --primary-foreground: #000000;
+  --secondary: #212124;
+  --secondary-foreground: #EDEDED;
+  --muted: #212124;
   --muted-foreground: #A1A1AA;
-  --accent-foreground: #FFFFFF;
+  --accent: #212124;
+  --accent-foreground: #EDEDED;
   --destructive: #EF4444;
-  --input: #27272A;
-  --ring: #6366F1;
+  --input: #17171A;
+  --ring: rgba(255, 255, 255, 0.25);
   --radius: 0.5rem;
 }
 
-[data-theme="light"] {
-  /* Backgrounds */
-  --bg-base: #F8FAFC;       /* Slate 50 */
-  --bg-surface: #FFFFFF;    /* White */
-  --bg-subcard: #F1F5F9;    /* Slate 100 */
-  --border: #E2E8F0;        /* Slate 200 */
-
-  /* Text */
-  --text-primary: #0F172A;  /* Slate 900 */
-  --text-secondary: #475569;/* Slate 600 */
-  --text-tertiary: #64748B; /* Slate 500 */
-
-  /* shadcn semantic tokens */
-  --background: #F8FAFC;
-  --foreground: #0F172A;
-  --card: #FFFFFF;
-  --card-foreground: #0F172A;
-  --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
-  --secondary: #F1F5F9;
-  --secondary-foreground: #0F172A;
-  --muted: #F1F5F9;
-  --muted-foreground: #64748B;
-  --input: #E2E8F0;
-}
-
-/* Set app-wide background and font */
+/* App-wide background and font */
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.015em;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* Utility: Monospace for IDs and timestamps */

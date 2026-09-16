@@ -14,7 +14,8 @@ def run_verification():
     print("STARTING PHASE 1 BACKEND VERIFICATION SUITE")
     print("=" * 70)
 
-    # Initialize tables
+    # Initialize clean tables for verification
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     client = TestClient(app)
 
@@ -99,10 +100,14 @@ def run_verification():
     assert update_data["note"] is not None
     assert "Investigated billing gateway" in update_data["note"]["note_text"]
 
-    # Verify detail shows the new note and status In Progress
+    # Verify detail shows the new notes (status change + user note) and status In Progress
     detail_check = client.get(f"/api/tickets/{ticket_id}").json()
     assert detail_check["status"] == "In Progress"
-    assert len(detail_check["notes"]) == 1
+    assert len(detail_check["notes"]) == 2, f"Expected 2 notes (status change + user note), got {len(detail_check['notes'])}"
+    assert detail_check["notes"][0]["event_type"] == "STATUS_CHANGE"
+    assert "Open → In Progress" in detail_check["notes"][0]["note_text"]
+    assert detail_check["notes"][1]["event_type"] == "NOTE_ADDED"
+    assert "Investigated billing gateway" in detail_check["notes"][1]["note_text"]
     print("PASS: Auto-advance successfully transitioned Open -> In Progress and saved note.")
 
     # 7b. Second note on In Progress ticket: Status should remain In Progress (not reset or change)
@@ -125,11 +130,11 @@ def run_verification():
     assert resolve_resp.status_code == 200
     assert resolve_resp.json()["status"] == "Closed"
 
-    # Verify notes in detail view
+    # Verify notes in detail view (2 status changes + 3 user notes = 5 notes)
     final_detail = client.get(f"/api/tickets/{ticket_id}").json()
     assert final_detail["status"] == "Closed"
-    assert len(final_detail["notes"]) == 3
-    print("PASS: Ticket resolved and closed with full 3-note timeline.")
+    assert len(final_detail["notes"]) == 5, f"Expected 5 notes, got {len(final_detail['notes'])}"
+    print("PASS: Ticket resolved and closed with full 5-note timeline.")
 
     # 8. GET /api/tickets/{nonexistent} -> 404
     print("\n[TEST 8] Testing GET /api/tickets/{nonexistent} -> 404 Not Found...")
