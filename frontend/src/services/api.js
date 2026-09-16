@@ -1,6 +1,36 @@
 import { API_BASE_URL } from "@/constants";
 
 const BASE = `${API_BASE_URL}/api/tickets`;
+const DEFAULT_TIMEOUT_MS = 5000;
+
+/**
+ * Fetch wrapper with timeout and offline detection to prevent indefinite hangs.
+ */
+async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
+  if (typeof navigator !== "undefined" && navigator.onLine === false) {
+    throw new Error("Network connection offline. Unable to reach server.");
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: options.signal || controller.signal,
+    });
+    return response;
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new Error("Request timed out. Please check your network connection.");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 /**
  * Helper to extract clean error message from FastAPI response.
@@ -50,7 +80,7 @@ export const ticketApi = {
     }
 
     const query = params.toString() ? `?${params.toString()}` : "";
-    const response = await fetch(`${BASE}${query}`, {
+    const response = await fetchWithTimeout(`${BASE}${query}`, {
       headers: { Accept: "application/json" },
     });
 
@@ -71,7 +101,7 @@ export const ticketApi = {
    * @returns {Promise<object>} Detailed ticket object
    */
   getById: async (ticketId) => {
-    const response = await fetch(`${BASE}/${encodeURIComponent(ticketId)}`, {
+    const response = await fetchWithTimeout(`${BASE}/${encodeURIComponent(ticketId)}`, {
       headers: { Accept: "application/json" },
     });
 
@@ -92,7 +122,7 @@ export const ticketApi = {
    * @returns {Promise<object>} Created ticket response { ticket_id, created_at }
    */
   create: async (data) => {
-    const response = await fetch(`${BASE}/`, {
+    const response = await fetchWithTimeout(`${BASE}/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -119,7 +149,7 @@ export const ticketApi = {
    * @returns {Promise<object>} Updated ticket response { updated_at }
    */
   update: async (ticketId, data) => {
-    const response = await fetch(`${BASE}/${encodeURIComponent(ticketId)}`, {
+    const response = await fetchWithTimeout(`${BASE}/${encodeURIComponent(ticketId)}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

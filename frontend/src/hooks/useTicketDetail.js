@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ticketApi } from "@/services/api";
 import { toast } from "sonner";
 
@@ -15,6 +15,15 @@ export function useTicketDetail(ticketId) {
   const [noteText, setNoteText] = useState("");
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState(null);
+
+  const ticketRef = useRef(ticket);
+  ticketRef.current = ticket;
+
+  const isSubmittingRef = useRef(isSubmitting);
+  isSubmittingRef.current = isSubmitting;
+
+  const noteTextRef = useRef(noteText);
+  noteTextRef.current = noteText;
 
   const fetchTicket = useCallback(async (silent = false) => {
     if (!ticketId) return;
@@ -54,10 +63,11 @@ export function useTicketDetail(ticketId) {
    * @param {"Open" | "In Progress" | "Closed"} newStatus
    */
   const handleStatusChange = async (newStatus) => {
-    if (!newStatus || newStatus === ticket?.status || isSubmitting) return;
+    const currentTicket = ticketRef.current;
+    if (!newStatus || newStatus === currentTicket?.status || isSubmittingRef.current) return;
 
-    const previousTicket = ticket;
-    const oldStatus = ticket?.status;
+    const previousTicket = currentTicket;
+    const oldStatus = currentTicket?.status;
 
     setActionError(null);
 
@@ -116,13 +126,15 @@ export function useTicketDetail(ticketId) {
    * Note appears immediately in timeline, input clears immediately.
    * On failure, note is removed from timeline, input text is restored, and error is shown.
    */
-  const handleAddNote = async () => {
-    const trimmed = noteText.trim();
-    if (!trimmed || isSubmitting || !ticket) return;
+  const handleAddNote = async (textOverride) => {
+    const rawText = typeof textOverride === "string" ? textOverride : noteTextRef.current;
+    const trimmed = rawText.trim();
+    const currentTicket = ticketRef.current;
+    if (!trimmed || isSubmittingRef.current || !currentTicket) return;
 
-    const previousTicket = ticket;
-    const previousText = noteText;
-    const oldStatus = ticket.status;
+    const previousTicket = currentTicket;
+    const previousText = rawText;
+    const oldStatus = currentTicket.status;
     const willAutoAdvance = oldStatus === "Open";
     const targetStatus = willAutoAdvance ? "In Progress" : oldStatus;
 
@@ -174,7 +186,7 @@ export function useTicketDetail(ticketId) {
       setActionError({
         type: "note",
         message: "Couldn't save note. Please try again.",
-        retry: () => handleAddNote(),
+        retry: () => handleAddNote(previousText),
       });
       toast.error(err.message || "Failed to add internal note");
     } finally {
@@ -185,13 +197,15 @@ export function useTicketDetail(ticketId) {
   /**
    * Optimistically append a note and explicitly transition status to "Closed".
    */
-  const handleAddNoteAndResolve = async () => {
-    const trimmed = noteText.trim();
-    if (!trimmed || isSubmitting || !ticket) return;
+  const handleAddNoteAndResolve = async (textOverride) => {
+    const rawText = typeof textOverride === "string" ? textOverride : noteTextRef.current;
+    const trimmed = rawText.trim();
+    const currentTicket = ticketRef.current;
+    if (!trimmed || isSubmittingRef.current || !currentTicket) return;
 
-    const previousTicket = ticket;
-    const previousText = noteText;
-    const oldStatus = ticket.status;
+    const previousTicket = currentTicket;
+    const previousText = rawText;
+    const oldStatus = currentTicket.status;
 
     setActionError(null);
 
@@ -243,7 +257,7 @@ export function useTicketDetail(ticketId) {
       setActionError({
         type: "note",
         message: "Couldn't resolve ticket. Please try again.",
-        retry: () => handleAddNoteAndResolve(),
+        retry: () => handleAddNoteAndResolve(previousText),
       });
       toast.error(err.message || "Failed to resolve ticket");
     } finally {
