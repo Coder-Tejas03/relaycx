@@ -24,7 +24,7 @@ export default function HomePage() {
   const isFiltered = statusFilter !== "All" || Boolean(searchQuery && searchQuery.trim().length > 0);
 
   return (
-    <div className="min-h-screen bg-[#09090B] text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen bg-[var(--bg-base)] text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
       <AppHeader ticketCount={isLoading ? null : tickets.length} />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">

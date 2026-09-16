@@ -54,7 +54,33 @@
   --radius: 0.5rem;
 }
 
-/* Set app-wide dark background and font */
+[data-theme="light"] {
+  /* Backgrounds */
+  --bg-base: #F8FAFC;       /* Slate 50 */
+  --bg-surface: #FFFFFF;    /* White */
+  --bg-subcard: #F1F5F9;    /* Slate 100 */
+  --border: #E2E8F0;        /* Slate 200 */
+
+  /* Text */
+  --text-primary: #0F172A;  /* Slate 900 */
+  --text-secondary: #475569;/* Slate 600 */
+  --text-tertiary: #64748B; /* Slate 500 */
+
+  /* shadcn semantic tokens */
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0F172A;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --input: #E2E8F0;
+}
+
+/* Set app-wide background and font */
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);

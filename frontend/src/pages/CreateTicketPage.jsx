@@ -55,7 +55,20 @@ export default function CreateTicketPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    if (touched[name]) {
+    // Real-time email validation without needing to submit
+    if (name === "customer_email") {
+      if (value.trim().length > 0) {
+        if (!EMAIL_REGEX.test(value.trim())) {
+          setErrors((prev) => ({ ...prev, customer_email: "Please enter a valid email address" }));
+        } else {
+          setErrors((prev) => ({ ...prev, customer_email: "" }));
+        }
+      } else if (touched.customer_email) {
+        setErrors((prev) => ({ ...prev, customer_email: "Customer email is required" }));
+      } else {
+        setErrors((prev) => ({ ...prev, customer_email: "" }));
+      }
+    } else if (touched[name]) {
       setErrors((prev) => ({
         ...prev,
         [name]: validateField(name, value),
@@ -75,7 +88,7 @@ export default function CreateTicketPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Mark all as touched and validate
+    // Mark all fields as touched and validate
     const validationErrors = {
       customer_name: validateField("customer_name", formData.customer_name),
       customer_email: validateField("customer_email", formData.customer_email),
@@ -93,7 +106,7 @@ export default function CreateTicketPage() {
 
     const hasErrors = Object.values(validationErrors).some((err) => Boolean(err));
     if (hasErrors) {
-      toast.error("Please resolve the highlighted form errors before submitting.");
+      toast.error("Please fill in all required fields correctly.");
       return;
     }
 
@@ -108,7 +121,7 @@ export default function CreateTicketPage() {
       };
 
       const response = await ticketApi.create(payload);
-      toast.success(`Ticket ${response.ticket_id} created successfully!`);
+      toast.success(`Ticket ${response.ticket_id} created!`);
       navigate("/");
     } catch (err) {
       toast.error(err.message || "Failed to create ticket. Please try again.");
@@ -118,7 +131,7 @@ export default function CreateTicketPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090B] text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen bg-[var(--bg-base)] text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
       <AppHeader />
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
@@ -195,10 +208,10 @@ export default function CreateTicketPage() {
                       disabled={isSubmitting}
                       className={cn(
                         "h-10 bg-zinc-950/60 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-indigo-500/40 text-sm",
-                        touched.customer_email && errors.customer_email && "border-red-500/80 focus-visible:ring-red-500/40"
+                        (touched.customer_email || formData.customer_email.trim().length > 0) && errors.customer_email && "border-red-500/80 focus-visible:ring-red-500/40"
                       )}
                     />
-                    {touched.customer_email && errors.customer_email && (
+                    {(touched.customer_email || formData.customer_email.trim().length > 0) && errors.customer_email && (
                       <p className="text-[11px] text-red-400 font-medium">
                         {errors.customer_email}
                       </p>

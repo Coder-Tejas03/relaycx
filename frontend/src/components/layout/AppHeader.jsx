@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { SunIcon, MoonIcon } from "@animateicons/react/lucide";
 import ShimmerButton from "@/components/magicui/ShimmerButton";
+import { cn } from "@/lib/utils";
 
 /**
  * Top navigation bar rendered across pages.
@@ -57,13 +58,20 @@ export function AppHeader({ ticketCount = null }) {
             type="button"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="flex size-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/80 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-all duration-200 cursor-pointer"
+            className="flex size-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/80 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-all duration-200 cursor-pointer overflow-hidden"
           >
-            {theme === "dark" ? (
-              <SunIcon size={18} className="transition-transform duration-300 hover:rotate-45" />
-            ) : (
-              <MoonIcon size={18} className="transition-transform duration-300 hover:-rotate-12" />
-            )}
+            <span
+              className={cn(
+                "inline-flex items-center justify-center transition-all duration-500 ease-in-out",
+                theme === "dark" ? "rotate-0" : "rotate-180"
+              )}
+            >
+              {theme === "dark" ? (
+                <SunIcon size={18} />
+              ) : (
+                <MoonIcon size={18} />
+              )}
+            </span>
           </button>
 
           <Link to="/tickets/new">

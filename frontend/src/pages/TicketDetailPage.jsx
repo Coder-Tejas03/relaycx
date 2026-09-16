@@ -36,12 +36,12 @@ export default function TicketDetailPage() {
   const handleCopyEmail = () => {
     if (ticket?.customer_email) {
       navigator.clipboard.writeText(ticket.customer_email);
-      toast.success("Customer email copied to clipboard!");
+      toast.success("Email copied!");
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#09090B] text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen bg-[var(--bg-base)] text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
       <AppHeader />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
@@ -135,7 +135,7 @@ export default function TicketDetailPage() {
                       type="button"
                       onClick={handleCopyEmail}
                       title="Click to copy email"
-                      className="group inline-flex items-center gap-1.5 font-mono-id text-zinc-400 hover:text-indigo-300 transition-colors cursor-pointer"
+                      className="group inline-flex items-center gap-1.5 font-mono-id text-zinc-400 hover:text-indigo-300 transition-colors cursor-pointer break-all"
                     >
                       <span>{ticket.customer_email}</span>
                       <svg
