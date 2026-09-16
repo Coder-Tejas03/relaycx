@@ -1,56 +1,83 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import AppHeader from "@/components/layout/AppHeader";
 import BlurFade from "@/components/magicui/BlurFade";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import SearchBar from "@/components/tickets/SearchBar";
+import StatusFilter from "@/components/tickets/StatusFilter";
+import TicketTable from "@/components/tickets/TicketTable";
+import { useTickets } from "@/hooks/useTickets";
 
+/**
+ * HomePage ("/") renders the core support queue dashboard with live search,
+ * status filtering, shimmer loading states, and instant navigation to ticket details.
+ */
 export default function HomePage() {
-  return (
-    <div className="min-h-screen bg-[#09090B] text-zinc-100">
-      <AppHeader ticketCount={0} />
+  const {
+    tickets,
+    isLoading,
+    searchQuery,
+    setSearchQuery,
+    statusFilter,
+    setStatusFilter,
+    resetFilters,
+  } = useTickets();
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <BlurFade delay={0.1}>
-          <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+  const isFiltered = statusFilter !== "All" || Boolean(searchQuery && searchQuery.trim().length > 0);
+
+  return (
+    <div className="min-h-screen bg-[#09090B] text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+      <AppHeader ticketCount={isLoading ? null : tickets.length} />
+
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
+        <BlurFade delay={0.08}>
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                Support Ticket Queue
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                Ticket Queue
               </h1>
-              <p className="mt-1 text-sm text-zinc-400">
-                Live dashboard of active customer support requests.
+              <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+                Live monitoring, search, and resolution pipeline for customer inquiries.
               </p>
             </div>
-
-            <Link to="/tickets/new">
-              <Button className="bg-indigo-600 text-white hover:bg-indigo-500">
-                + New Ticket
-              </Button>
-            </Link>
           </div>
         </BlurFade>
 
+        {/* Controls Bar: Search Bar + Status Filter + Reset Filters */}
+        <BlurFade delay={0.14}>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 p-3 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 backdrop-blur-sm">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search by ticket ID, customer name, email, or subject..."
+            />
+
+            <div className="flex items-center justify-start sm:justify-end gap-2.5 overflow-x-auto">
+              <StatusFilter
+                activeFilter={statusFilter}
+                onChange={setStatusFilter}
+              />
+
+              {isFiltered && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-indigo-400 hover:bg-zinc-800/60 border border-zinc-800 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 shrink-0 select-none animate-in fade-in duration-150"
+                  title="Reset all search and status filters"
+                >
+                  <span>Reset Filters</span>
+                  <span className="text-[10px] text-zinc-500">✕</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </BlurFade>
+
+        {/* Ticket Table with skeletons & empty states */}
         <BlurFade delay={0.2}>
-          <Card className="border-zinc-800 bg-[#18181B]">
-            <CardHeader>
-              <CardTitle className="text-lg text-white">Tickets Queue</CardTitle>
-              <CardDescription className="text-zinc-400">
-                Phase 2 Shell Active — routing, components, and design system ready.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-lg border border-dashed border-zinc-800 p-8 text-center">
-                <p className="text-sm text-zinc-400">
-                  Ticket queue table will connect to backend API in Phase 3.
-                </p>
-                <div className="mt-4 flex justify-center gap-3">
-                  <Link to="/tickets/TKT-SAMPLE" className="text-xs text-indigo-400 underline underline-offset-4 hover:text-indigo-300">
-                    Preview Sample Ticket Detail (/tickets/TKT-SAMPLE) →
-                  </Link>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <TicketTable
+            tickets={tickets}
+            isLoading={isLoading}
+            onResetFilters={resetFilters}
+          />
         </BlurFade>
       </main>
     </div>

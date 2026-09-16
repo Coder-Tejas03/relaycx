@@ -11,21 +11,47 @@ export function cn(...inputs) {
 }
 
 /**
+ * Safely parses an ISO date string or Date object.
+ * Ensures ISO strings without an explicit timezone (e.g. from SQLite/FastAPI)
+ * are treated as UTC rather than interpreted as local device time.
+ * @param {string|Date} dateInput
+ * @returns {Date|null}
+ */
+export function parseUtcDate(dateInput) {
+  if (!dateInput) return null;
+  if (dateInput instanceof Date) return isNaN(dateInput.getTime()) ? null : dateInput;
+
+  let str = String(dateInput).trim();
+  if (!str) return null;
+
+  // If string has a space instead of T (e.g., SQLite raw output), normalize it
+  if (str.includes(" ") && !str.includes("T")) {
+    str = str.replace(" ", "T");
+  }
+
+  // If ISO string without Z or timezone offset (+HH:MM / -HH:MM), append Z
+  if (!str.endsWith("Z") && !/[+-]\d{2}(:\d{2})?$/.test(str)) {
+    str = str + "Z";
+  }
+
+  const date = new Date(str);
+  return isNaN(date.getTime()) ? null : date;
+}
+
+/**
  * Formats an ISO date string or Date object into a human-friendly relative time.
  * e.g., "just now", "14m ago", "2h ago", "3d ago", or "Oct 14, 2026" if > 30 days.
  * @param {string|Date} dateInput
  * @returns {string} Formatted relative time.
  */
 export function formatRelativeTime(dateInput) {
-  if (!dateInput) return "";
-  const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
-  if (isNaN(date.getTime())) return "";
+  const date = parseUtcDate(dateInput);
+  if (!date) return "";
 
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 0) return "just now";
-  if (diffInSeconds < 60) return "just now";
+  if (diffInSeconds < 0 || diffInSeconds < 60) return "just now";
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
@@ -40,5 +66,23 @@ export function formatRelativeTime(dateInput) {
     month: "short",
     day: "numeric",
     year: "numeric",
+  });
+}
+
+/**
+ * Formats an ISO date string into user-friendly localized date and time.
+ * @param {string|Date} dateInput
+ * @returns {string} Formatted date & time, e.g. "Sep 16, 2026, 11:14 AM"
+ */
+export function formatDateTime(dateInput) {
+  const date = parseUtcDate(dateInput);
+  if (!date) return "N/A";
+
+  return date.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }

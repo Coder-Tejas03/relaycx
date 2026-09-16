@@ -3,6 +3,33 @@ import { API_BASE_URL } from "@/constants";
 const BASE = `${API_BASE_URL}/api/tickets`;
 
 /**
+ * Helper to extract clean error message from FastAPI response.
+ * Handles both JSON detail objects and plain text errors.
+ */
+async function parseApiError(response, defaultMsg) {
+  try {
+    const errorJson = await response.json();
+    if (errorJson && errorJson.detail) {
+      if (typeof errorJson.detail === "string") {
+        return errorJson.detail;
+      }
+      if (Array.isArray(errorJson.detail)) {
+        return errorJson.detail.map((err) => err.msg || JSON.stringify(err)).join("; ");
+      }
+      return JSON.stringify(errorJson.detail);
+    }
+  } catch {
+    try {
+      const errorText = await response.text();
+      if (errorText) return errorText;
+    } catch {
+      // Fall through to default message
+    }
+  }
+  return defaultMsg;
+}
+
+/**
  * Service encapsulating all communication with the RelayCX backend API.
  * Components and hooks import from here, never calling fetch() directly.
  */
@@ -23,13 +50,16 @@ export const ticketApi = {
     }
 
     const query = params.toString() ? `?${params.toString()}` : "";
-    const response = await fetch(`${BASE}/${query}`, {
+    const response = await fetch(`${BASE}${query}`, {
       headers: { Accept: "application/json" },
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || `Failed to fetch tickets (${response.status})`);
+      const errorMsg = await parseApiError(
+        response,
+        `Failed to fetch tickets (${response.status})`
+      );
+      throw new Error(errorMsg);
     }
 
     return response.json();
@@ -46,8 +76,11 @@ export const ticketApi = {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || `Failed to fetch ticket ${ticketId} (${response.status})`);
+      const errorMsg = await parseApiError(
+        response,
+        `Failed to fetch ticket ${ticketId} (${response.status})`
+      );
+      throw new Error(errorMsg);
     }
 
     return response.json();
@@ -69,8 +102,11 @@ export const ticketApi = {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || `Failed to create ticket (${response.status})`);
+      const errorMsg = await parseApiError(
+        response,
+        `Failed to create ticket (${response.status})`
+      );
+      throw new Error(errorMsg);
     }
 
     return response.json();
@@ -93,8 +129,11 @@ export const ticketApi = {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || `Failed to update ticket ${ticketId} (${response.status})`);
+      const errorMsg = await parseApiError(
+        response,
+        `Failed to update ticket ${ticketId} (${response.status})`
+      );
+      throw new Error(errorMsg);
     }
 
     return response.json();
