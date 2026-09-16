@@ -280,6 +280,7 @@ Full inspection of all source files. Architecture documented. 28 gaps identified
 - `backend/tests/verify_phase1.py` — updated assertions for `STATUS_CHANGE` note creation and clean table reset
 - `frontend/src/lib/utils.js` — added `formatTimeOnly()`
 - `frontend/src/context/TicketContext.jsx` — added `sessionStorage` persistence for `searchQuery` and `statusFilter`
+- `frontend/src/services/api.js` — added `fetchWithTimeout` and `navigator.onLine` checks to fail fast on offline/network errors
 - `frontend/src/hooks/useTicketDetail.js` — implemented optimistic status/note updates, rollback, and `actionError`
 - `frontend/src/components/tickets/NoteTimeline.jsx` — semantic event badges, vertical connecting spine, hover exact timestamps
 - `frontend/src/pages/TicketDetailPage.jsx` — added `ActionErrorBanner` with Retry for status and note failures
