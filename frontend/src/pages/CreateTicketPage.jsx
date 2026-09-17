@@ -4,9 +4,11 @@ import BlurFade from "@/components/magicui/BlurFade";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ticketApi } from "@/services/api";
+import { useTicketsContext } from "@/context/TicketContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
+
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -18,6 +20,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function CreateTicketPage() {
   const navigate = useNavigate();
   const nameInputRef = useRef(null);
+  const { refresh, addTicketToState } = useTicketsContext();
 
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -126,6 +129,20 @@ export default function CreateTicketPage() {
 
       const response = await ticketApi.create(payload);
       toast.success(`Ticket ${response.ticket_id} created successfully!`);
+
+      // Optimistically add created ticket to global context state and trigger refresh
+      if (addTicketToState) {
+        addTicketToState({
+          ...response,
+          ...payload,
+          status: response.status || "Open",
+          created_at: response.created_at || new Date().toISOString(),
+          updated_at: response.updated_at || response.created_at || new Date().toISOString(),
+          notes: [],
+        });
+      }
+      refresh?.(true);
+
       navigate("/");
     } catch (err) {
       toast.error(err.message || "Failed to create ticket. Please try again.");

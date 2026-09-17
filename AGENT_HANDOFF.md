@@ -35,10 +35,11 @@
 | 0 | Codebase Audit | ✅ COMPLETE | — |
 | 1 | Workflow Correctness | ✅ COMPLETE | Awaiting |
 | 2 | Core Queue UX | ✅ COMPLETE | Awaiting |
-| 3 | Ticket Detail Experience | ⬜ NOT STARTED | Awaiting |
+| 3 | Ticket Detail Experience | ✅ COMPLETE | Awaiting |
 | 4 | Visual System Audit | ⬜ NOT STARTED | Awaiting |
 | 5 | Power User UX | ⬜ NOT STARTED | Awaiting |
 | 6 | Demo Readiness & QA | ⬜ NOT STARTED | Awaiting |
+
 
 
 ---
@@ -338,26 +339,35 @@ Manual browser QA: 100% verified and confirmed working by user
 
 ---
 
-## ⬜ Phase 3 — Ticket Detail Experience
+## ✅ Phase 3 — Ticket Detail Experience
 
-**Status:** NOT STARTED — awaiting user instruction to proceed
+**Status:** COMPLETE
 
-**Started:** —
-**Completed:** —
+**Started:** 2026-09-17
+**Completed:** 2026-09-17
 
 **Files changed:**
-_(to be filled in)_
+- `frontend/src/lib/utils.js` — added `formatDuration(startDateInput, endDateInput)` supporting human-readable durations (`"14m"`, `"2h 36m"`, `"3d 4h"`, `"< 1m"`).
+- `frontend/src/components/tickets/NoteConsole.jsx` — added explicit closed-ticket UX with warning notice (`"Ticket closed. Customer-facing activity is disabled. You can still add an audit note."`), updated composer label/placeholder for closed audit logs, and provided dual actions `[Add Audit Note]` and `[Reopen Ticket]`.
+- `frontend/src/pages/TicketDetailPage.jsx` — added prominent "Next Action" primary CTA card above status switcher with loading states and optimistic transitions per status (`[Start Investigation]`, `[Resolve Ticket]`, `[Reopen Ticket]`); removed "Manual Override" label and updated workflow card header to "WORKFLOW STATUS" with contextual status description; evolved Audit Information panel to display `"Activity: N events"` and conditional `"Resolution Time: Xh Ym"` for closed tickets; passed `onReopen` to `NoteConsole`.
+- `frontend/src/context/TicketContext.jsx` — added `silent` background refresh support, `updateTicketInState(ticketId, updates)` for real-time optimistic global state updates, and `addTicketToState(newTicket)` for instant intake visibility while preserving active search queries and status filter pills.
+- `frontend/src/pages/HomePage.jsx` — added mount effect to silently refresh queue state on navigation without jarring skeleton flashes.
+- `frontend/src/pages/CreateTicketPage.jsx` — synced newly created tickets into global `TicketContext` state and triggered background refresh before redirecting to dashboard.
+- `frontend/src/hooks/useTicketDetail.js` — integrated `useTicketsContext` so that status updates, note additions, and resolutions immediately update the global queue, metrics, and sidebar badge counts in real time.
 
 **Deviations from plan:**
-_(to be filled in)_
+- None. Added queue freshness & real-time synchronization so all ticket creations and edits immediately reflect upon returning to the dashboard while preserving search query and status filter selections intact.
 
 **Test results:**
 ```
-npm run build: [PENDING]
+npm run build: ZERO ERRORS (Vite v8.3.0 production build succeeded in 711ms)
+backend verification tests: ALL 9 TESTS PASSED CLEANLY
+formatDuration unit tests: All duration formats (minutes, hours & minutes, days & hours, sub-minute) verified accurate
 ```
 
 **Notes for next phase:**
-_(to be filled in)_
+- Phase 4 is Visual System Audit: systematically reviewing focus-visible states across buttons and inputs, normalizing motion duration tokens in `index.css`, enforcing consistent button hierarchy across pages, and verifying mobile layout and 44px minimum touch targets.
+
 
 ---
 

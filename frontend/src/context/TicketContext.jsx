@@ -67,9 +67,11 @@ export function TicketProvider({ children }) {
   }, [searchQuery]);
 
   // Fetch filtered tickets for the active table view and overview for stats
-  const fetchFilteredTickets = useCallback(async () => {
+  const fetchFilteredTickets = useCallback(async (silent = false) => {
     const currentRequestId = ++requestIdRef.current;
-    setIsLoading(true);
+    if (!silent) {
+      setIsLoading(true);
+    }
     setError(null);
 
     try {
@@ -120,9 +122,39 @@ export function TicketProvider({ children }) {
     }
   }, []);
 
-  const refresh = useCallback(async () => {
-    await fetchFilteredTickets();
+  const refresh = useCallback(async (silent = false) => {
+    await fetchFilteredTickets(silent);
   }, [fetchFilteredTickets]);
+
+  // Optimistically update a ticket's fields across cached ticket lists
+  const updateTicketInState = useCallback((ticketId, updates) => {
+    if (!ticketId || !updates) return;
+    setAllTickets((prev) =>
+      prev.map((t) => (t.ticket_id === ticketId ? { ...t, ...updates } : t))
+    );
+    setTickets((prev) =>
+      prev.map((t) => (t.ticket_id === ticketId ? { ...t, ...updates } : t))
+    );
+  }, []);
+
+  // Prepend or update newly created ticket in cache
+  const addTicketToState = useCallback((newTicket) => {
+    if (!newTicket || !newTicket.ticket_id) return;
+    setAllTickets((prev) => [newTicket, ...prev.filter((t) => t.ticket_id !== newTicket.ticket_id)]);
+    setTickets((prev) => {
+      const matchesStatus = statusFilter === "All" || statusFilter === newTicket.status;
+      const query = (debouncedQuery || "").trim().toLowerCase();
+      const matchesQuery =
+        !query ||
+        newTicket.ticket_id.toLowerCase().includes(query) ||
+        (newTicket.customer_name && newTicket.customer_name.toLowerCase().includes(query)) ||
+        (newTicket.subject && newTicket.subject.toLowerCase().includes(query));
+      if (matchesStatus && matchesQuery) {
+        return [newTicket, ...prev.filter((t) => t.ticket_id !== newTicket.ticket_id)];
+      }
+      return prev.filter((t) => t.ticket_id !== newTicket.ticket_id);
+    });
+  }, [statusFilter, debouncedQuery]);
 
   // Computed metrics ribbon statistics from all tickets
   const stats = useMemo(() => {
@@ -152,6 +184,8 @@ export function TicketProvider({ children }) {
     setStatusFilter,
     resetFilters,
     refresh,
+    updateTicketInState,
+    addTicketToState,
     stats,
   };
 

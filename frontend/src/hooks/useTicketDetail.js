@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ticketApi } from "@/services/api";
+import { useTicketsContext } from "@/context/TicketContext";
 import { toast } from "sonner";
+
 
 /**
  * Custom hook managing single ticket state, note timeline, status transitions,
@@ -15,6 +17,13 @@ export function useTicketDetail(ticketId) {
   const [noteText, setNoteText] = useState("");
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState(null);
+
+  let ticketsContext = null;
+  try {
+    ticketsContext = useTicketsContext();
+  } catch {
+    // Graceful fallback if used outside TicketProvider
+  }
 
   const ticketRef = useRef(ticket);
   ticketRef.current = ticket;
@@ -68,25 +77,31 @@ export function useTicketDetail(ticketId) {
 
     const previousTicket = currentTicket;
     const oldStatus = currentTicket?.status;
+    const nowIso = new Date().toISOString();
 
     setActionError(null);
 
-    // 1. Optimistically update local ticket state
+    // 1. Optimistically update local ticket state and global context
     const optimisticStatusNote = {
       id: `temp-status-${Date.now()}`,
       ticket_id: ticketId,
       note_text: `${oldStatus} → ${newStatus}`,
       event_type: "STATUS_CHANGE",
-      created_at: new Date().toISOString(),
+      created_at: nowIso,
       _pending: true,
     };
 
     setTicket((prev) => ({
       ...prev,
       status: newStatus,
-      updated_at: new Date().toISOString(),
+      updated_at: nowIso,
       notes: [...(prev?.notes || []), optimisticStatusNote],
     }));
+
+    ticketsContext?.updateTicketInState(ticketId, {
+      status: newStatus,
+      updated_at: nowIso,
+    });
 
     setIsSubmitting(true);
 
@@ -95,7 +110,7 @@ export function useTicketDetail(ticketId) {
       const result = await ticketApi.update(ticketId, { status: newStatus });
       toast.success(`Ticket status updated to "${newStatus}"`);
 
-      // Update timestamps & sync with backend
+      // Update timestamps & sync with backend and global context
       setTicket((prev) => {
         if (!prev) return prev;
         return {
@@ -105,11 +120,22 @@ export function useTicketDetail(ticketId) {
         };
       });
 
+      ticketsContext?.updateTicketInState(ticketId, {
+        status: result.status,
+        updated_at: result.updated_at,
+      });
+      ticketsContext?.refresh(true);
+
       // Background silent sync to fetch canonical database records
       await fetchTicket(true);
     } catch (err) {
       // 3. Rollback on failure
       setTicket(previousTicket);
+      ticketsContext?.updateTicketInState(ticketId, {
+        status: previousTicket?.status,
+        updated_at: previousTicket?.updated_at,
+      });
+
       setActionError({
         type: "status",
         message: `Couldn't update status. Ticket remains ${previousTicket?.status || "unchanged"}.`,
@@ -137,6 +163,7 @@ export function useTicketDetail(ticketId) {
     const oldStatus = currentTicket.status;
     const willAutoAdvance = oldStatus === "Open";
     const targetStatus = willAutoAdvance ? "In Progress" : oldStatus;
+    const nowIso = new Date().toISOString();
 
     setActionError(null);
 
@@ -148,7 +175,7 @@ export function useTicketDetail(ticketId) {
         ticket_id: ticketId,
         note_text: "Open → In Progress",
         event_type: "STATUS_CHANGE",
-        created_at: new Date().toISOString(),
+        created_at: nowIso,
         _pending: true,
       });
     }
@@ -158,7 +185,7 @@ export function useTicketDetail(ticketId) {
       ticket_id: ticketId,
       note_text: trimmed,
       event_type: "NOTE_ADDED",
-      created_at: new Date().toISOString(),
+      created_at: nowIso,
       _pending: true,
     });
 
@@ -166,10 +193,16 @@ export function useTicketDetail(ticketId) {
     setTicket((prev) => ({
       ...prev,
       status: targetStatus,
-      updated_at: new Date().toISOString(),
+      updated_at: nowIso,
       notes: [...(prev?.notes || []), ...optimisticNotes],
     }));
     setNoteText("");
+
+    ticketsContext?.updateTicketInState(ticketId, {
+      status: targetStatus,
+      updated_at: nowIso,
+    });
+
     setIsSubmitting(true);
 
     // 2. Fire network request
@@ -177,12 +210,19 @@ export function useTicketDetail(ticketId) {
       await ticketApi.update(ticketId, { note_text: trimmed });
       toast.success("Internal note added successfully");
 
+      ticketsContext?.refresh(true);
+
       // Canonical silent sync
       await fetchTicket(true);
     } catch (err) {
       // 3. Rollback on failure
       setTicket(previousTicket);
       setNoteText(previousText);
+      ticketsContext?.updateTicketInState(ticketId, {
+        status: previousTicket?.status,
+        updated_at: previousTicket?.updated_at,
+      });
+
       setActionError({
         type: "note",
         message: "Couldn't save note. Please try again.",
@@ -206,6 +246,7 @@ export function useTicketDetail(ticketId) {
     const previousTicket = currentTicket;
     const previousText = rawText;
     const oldStatus = currentTicket.status;
+    const nowIso = new Date().toISOString();
 
     setActionError(null);
 
@@ -217,7 +258,7 @@ export function useTicketDetail(ticketId) {
         ticket_id: ticketId,
         note_text: `${oldStatus} → Closed`,
         event_type: "STATUS_CHANGE",
-        created_at: new Date().toISOString(),
+        created_at: nowIso,
         _pending: true,
       });
     }
@@ -227,17 +268,23 @@ export function useTicketDetail(ticketId) {
       ticket_id: ticketId,
       note_text: trimmed,
       event_type: "NOTE_ADDED",
-      created_at: new Date().toISOString(),
+      created_at: nowIso,
       _pending: true,
     });
 
     setTicket((prev) => ({
       ...prev,
       status: "Closed",
-      updated_at: new Date().toISOString(),
+      updated_at: nowIso,
       notes: [...(prev?.notes || []), ...optimisticNotes],
     }));
     setNoteText("");
+
+    ticketsContext?.updateTicketInState(ticketId, {
+      status: "Closed",
+      updated_at: nowIso,
+    });
+
     setIsSubmitting(true);
 
     // 2. Fire network request
@@ -248,12 +295,19 @@ export function useTicketDetail(ticketId) {
       });
       toast.success("Ticket resolved and note logged!");
 
+      ticketsContext?.refresh(true);
+
       // Canonical silent sync
       await fetchTicket(true);
     } catch (err) {
       // 3. Rollback on failure
       setTicket(previousTicket);
       setNoteText(previousText);
+      ticketsContext?.updateTicketInState(ticketId, {
+        status: previousTicket?.status,
+        updated_at: previousTicket?.updated_at,
+      });
+
       setActionError({
         type: "note",
         message: "Couldn't resolve ticket. Please try again.",

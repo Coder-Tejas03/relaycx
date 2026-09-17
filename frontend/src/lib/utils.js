@@ -101,3 +101,32 @@ export function formatTimeOnly(dateInput) {
     minute: "2-digit",
   });
 }
+
+/**
+ * Formats duration between two dates into a human-readable string.
+ * Examples: "14m", "2h 36m", "3d 4h", or "< 1m" if under 60 seconds.
+ * @param {string|Date} startDateInput - Starting timestamp (e.g. created_at)
+ * @param {string|Date} endDateInput - Ending timestamp (e.g. updated_at)
+ * @returns {string} Human-readable duration
+ */
+export function formatDuration(startDateInput, endDateInput) {
+  const start = parseUtcDate(startDateInput);
+  const end = parseUtcDate(endDateInput);
+  if (!start || !end) return "N/A";
+
+  const diffInSeconds = Math.max(0, Math.floor((end.getTime() - start.getTime()) / 1000));
+  if (diffInSeconds < 60) return "< 1m";
+
+  const days = Math.floor(diffInSeconds / 86400);
+  const hours = Math.floor((diffInSeconds % 86400) / 3600);
+  const minutes = Math.floor((diffInSeconds % 3600) / 60);
+
+  if (days > 0) {
+    return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+  }
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  }
+  return `${minutes}m`;
+}
+

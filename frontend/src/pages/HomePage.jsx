@@ -19,8 +19,14 @@ export default function HomePage() {
     statusFilter,
     setStatusFilter,
     resetFilters,
+    refresh,
     stats,
   } = useTicketsContext();
+
+  // Silently refresh the queue on mount to ensure fresh state when returning from detail or create pages
+  React.useEffect(() => {
+    refresh(true);
+  }, [refresh]);
 
   const isFiltered = statusFilter !== "All" || Boolean(searchQuery && searchQuery.trim().length > 0);
 

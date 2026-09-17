@@ -5,10 +5,21 @@ import StatusBadge from "@/components/tickets/StatusBadge";
 import NoteTimeline from "@/components/tickets/NoteTimeline";
 import NoteConsole from "@/components/tickets/NoteConsole";
 import { useTicketDetail } from "@/hooks/useTicketDetail";
-import { formatRelativeTime, formatDateTime, cn } from "@/lib/utils";
+import { formatRelativeTime, formatDateTime, formatDuration, cn } from "@/lib/utils";
 import { TICKET_STATUSES } from "@/constants";
 import { toast } from "sonner";
-import { ArrowLeft, Copy, Check, AlertCircle, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Copy,
+  Check,
+  AlertCircle,
+  X,
+  Play,
+  CheckCircle2,
+  RotateCcw,
+  Loader2,
+} from "lucide-react";
+
 
 /**
  * Inline error recovery banner with retry capability and auto-dismiss.
@@ -309,6 +320,7 @@ export default function TicketDetailPage() {
                     onNoteChange={setNoteText}
                     onAddNote={handleAddNote}
                     onAddNoteAndResolve={handleAddNoteAndResolve}
+                    onReopen={() => handleStatusChange("Open")}
                     isSubmitting={isSubmitting}
                     currentStatus={ticket.status}
                   />
@@ -323,16 +335,103 @@ export default function TicketDetailPage() {
             </BlurFade>
           </div>
 
-          {/* Right Column (30% width): Status Control Switcher & Audit Info */}
+          {/* Right Column (30% width): Primary CTA, Workflow Status & Audit Info */}
           <div className="space-y-6">
-            {/* Vercel Segmented Status Switcher */}
-            <BlurFade delay={0.14}>
+            {/* Primary Action CTA (Next Action Card) */}
+            <BlurFade delay={0.13}>
               <div className="rounded-xl border border-white/[0.09] bg-[#212124] p-5 shadow-xl space-y-3.5">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-mono font-medium uppercase tracking-wider text-zinc-400">
-                    Workflow Status
+                    Next Action
                   </h3>
-                  <span className="text-[11px] font-mono text-zinc-500">Manual Override</span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+                    Primary CTA
+                  </span>
+                </div>
+
+                {/* Open Ticket -> Start Investigation */}
+                {ticket.status === "Open" && (
+                  <button
+                    type="button"
+                    disabled={isSubmitting}
+                    onClick={() => handleStatusChange("In Progress")}
+                    className="w-full h-11 px-4 rounded-lg bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md select-none active:scale-[0.99]"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin text-zinc-900" />
+                        <span>Starting Investigation...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Play size={15} className="fill-current text-black" />
+                        <span>Start Investigation</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {/* In Progress Ticket -> Resolve Ticket */}
+                {ticket.status === "In Progress" && (
+                  <button
+                    type="button"
+                    disabled={isSubmitting}
+                    onClick={() => handleStatusChange("Closed")}
+                    className="w-full h-11 px-4 rounded-lg bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md select-none active:scale-[0.99]"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin text-zinc-900" />
+                        <span>Resolving Ticket...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={16} className="text-emerald-600 stroke-[2.5]" />
+                        <span>Resolve Ticket</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {/* Closed Ticket -> Reopen Ticket */}
+                {ticket.status === "Closed" && (
+                  <button
+                    type="button"
+                    disabled={isSubmitting}
+                    onClick={() => handleStatusChange("Open")}
+                    className="w-full h-11 px-4 rounded-lg bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 hover:border-amber-500/50 hover:text-amber-300 text-zinc-100 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm select-none active:scale-[0.99]"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin text-amber-400" />
+                        <span>Reopening Ticket...</span>
+                      </>
+                    ) : (
+                      <>
+                        <RotateCcw size={15} className="text-amber-400" />
+                        <span>Reopen Ticket</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  {ticket.status === "Open"
+                    ? "Advance ticket into active investigation queue."
+                    : ticket.status === "In Progress"
+                    ? "Confirm customer resolution and close ticket."
+                    : "Reopen ticket to Open queue for follow-up inquiry."}
+                </p>
+              </div>
+            </BlurFade>
+
+            {/* Vercel Segmented Status Switcher */}
+            <BlurFade delay={0.15}>
+              <div className="rounded-xl border border-white/[0.09] bg-[#212124] p-5 shadow-xl space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-mono font-medium uppercase tracking-wider text-zinc-400">
+                    WORKFLOW STATUS
+                  </h3>
                 </div>
 
                 {/* Horizontal Segmented Button Group */}
@@ -356,6 +455,27 @@ export default function TicketDetailPage() {
                       </button>
                     );
                   })}
+                </div>
+
+                {/* Status context description */}
+                <div className="flex items-center gap-2 pt-0.5">
+                  <span
+                    className={cn(
+                      "size-1.5 rounded-full shrink-0",
+                      ticket.status === "Open"
+                        ? "bg-blue-400"
+                        : ticket.status === "In Progress"
+                        ? "bg-amber-400"
+                        : "bg-zinc-500"
+                    )}
+                  />
+                  <span className="text-[11px] text-zinc-400 font-medium">
+                    {ticket.status === "Open"
+                      ? "Awaiting investigation"
+                      : ticket.status === "In Progress"
+                      ? "Under active investigation"
+                      : "Issue resolved"}
+                  </span>
                 </div>
 
                 {actionError?.type === "status" && (
@@ -405,11 +525,20 @@ export default function TicketDetailPage() {
                 </div>
 
                 <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
-                  <span className="text-zinc-500">Internal Notes</span>
+                  <span className="text-zinc-500">Activity</span>
                   <span className="font-mono-id text-zinc-200">
-                    {ticket.notes?.length || 0}
+                    {ticket.notes?.length || 0} events
                   </span>
                 </div>
+
+                {ticket.status === "Closed" && (
+                  <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
+                    <span className="text-zinc-500">Resolution Time</span>
+                    <span className="font-mono-id text-emerald-400 font-medium">
+                      {formatDuration(ticket.created_at, ticket.updated_at)}
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex flex-col py-1.5 border-b border-zinc-800/60 gap-0.5">
                   <div className="flex items-center justify-between">
