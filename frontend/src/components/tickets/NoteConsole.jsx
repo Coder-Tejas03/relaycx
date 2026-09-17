@@ -81,7 +81,7 @@ export default function NoteConsole({
           }
           disabled={isSubmitting}
           rows={3}
-          className="w-full resize-y min-h-[85px] rounded-lg bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-zinc-600/40 text-xs sm:text-sm"
+          className="w-full resize-y min-h-[90px] rounded-lg bg-zinc-950 border-zinc-800 text-zinc-100 placeholder:text-zinc-500 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:border-transparent transition-all duration-micro"
         />
       </div>
 
@@ -94,7 +94,7 @@ export default function NoteConsole({
           </span>
         )}
 
-        <div className="flex items-center gap-2.5 ml-auto">
+        <div className="flex flex-wrap items-center gap-2.5 ml-auto">
           {isClosed ? (
             <>
               {/* Reopen Ticket Action for Closed Ticket */}
@@ -103,7 +103,7 @@ export default function NoteConsole({
                   type="button"
                   onClick={onReopen}
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-zinc-900 border border-zinc-700 hover:border-amber-500/40 text-zinc-200 hover:text-amber-300 hover:bg-zinc-800 text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none"
+                  className="inline-flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-3.5 rounded-md bg-zinc-900 border border-zinc-700 hover:border-amber-500/40 text-zinc-200 hover:text-amber-300 hover:bg-zinc-800 text-xs font-medium transition-all duration-micro cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:opacity-40 disabled:cursor-not-allowed select-none"
                 >
                   <RotateCcw size={13} className="text-amber-400" />
                   <span>{isSubmitting ? "Reopening..." : "Reopen Ticket"}</span>
@@ -115,7 +115,7 @@ export default function NoteConsole({
                 type="submit"
                 disabled={isDisabled}
                 title="Submit audit note (⌘↵)"
-                className="inline-flex items-center justify-center gap-1.5 h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none shadow-sm"
+                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-all duration-micro cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-40 disabled:cursor-not-allowed select-none shadow-sm"
               >
                 <span>{isSubmitting ? "Saving..." : "Add Audit Note"}</span>
                 <kbd className="hidden sm:inline-block font-mono text-[10px] text-zinc-600 bg-zinc-200 px-1 py-0.5 rounded border border-zinc-300 select-none">
@@ -130,7 +130,7 @@ export default function NoteConsole({
                 type="button"
                 onClick={onAddNoteAndResolve}
                 disabled={isDisabled}
-                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-zinc-900 border border-zinc-800 hover:border-emerald-500/40 text-emerald-400 hover:text-emerald-300 hover:bg-zinc-850 text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none"
+                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-3 rounded-md bg-zinc-900 border border-zinc-800 hover:border-emerald-500/40 text-emerald-400 hover:text-emerald-300 hover:bg-zinc-800 text-xs font-medium transition-all duration-micro cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:opacity-40 disabled:cursor-not-allowed select-none"
               >
                 <ZapIcon size={13} className="text-emerald-400" />
                 <span>{isSubmitting ? "Resolving..." : "Add & Resolve"}</span>
@@ -141,7 +141,7 @@ export default function NoteConsole({
                 type="submit"
                 disabled={isDisabled}
                 title="Submit note (⌘↵)"
-                className="inline-flex items-center justify-center gap-1.5 h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none shadow-sm"
+                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-all duration-micro cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-40 disabled:cursor-not-allowed select-none shadow-sm"
               >
                 <span>{isSubmitting ? "Saving..." : "Add Note"}</span>
                 <kbd className="hidden sm:inline-block font-mono text-[10px] text-zinc-600 bg-zinc-200 px-1 py-0.5 rounded border border-zinc-300 select-none">

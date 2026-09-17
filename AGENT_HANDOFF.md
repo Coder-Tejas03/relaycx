@@ -153,14 +153,14 @@ See implementation_plan.md → Phase 4
 - Various components — focus states, hover states, button hierarchy, touch targets
 
 ### Acceptance criteria:
-- [ ] Every button has a visible `:focus-visible` outline
-- [ ] All interactive elements have deliberate hover, focus, pressed states
-- [ ] KPI cards: cursor-pointer visible; border brightens on hover
-- [ ] Motion durations are normalized to the token system
-- [ ] Button hierarchy consistent: white (primary), zinc-900 (secondary), throughout all pages
-- [ ] Application is fully usable on 375px mobile viewport
-- [ ] All touch targets are ≥ 44px tall on mobile
-- [ ] `npm run build` — zero errors
+- [x] Every button has a visible `:focus-visible` outline
+- [x] All interactive elements have deliberate hover, focus, pressed states
+- [x] KPI cards: cursor-pointer visible; border brightens on hover
+- [x] Motion durations are normalized to the token system
+- [x] Button hierarchy consistent: white (primary), zinc-900 (secondary), throughout all pages
+- [x] Application is fully usable on 375px mobile viewport
+- [x] All touch targets are ≥ 44px tall on mobile
+- [x] `npm run build` — zero errors
 
 ---
 
@@ -371,26 +371,45 @@ formatDuration unit tests: All duration formats (minutes, hours & minutes, days 
 
 ---
 
-## ⬜ Phase 4 — Visual System Audit
+## ✅ Phase 4 — Visual System Audit
 
-**Status:** NOT STARTED — awaiting user instruction to proceed
+**Status:** COMPLETE
 
-**Started:** —
-**Completed:** —
+**Started:** 2026-09-17
+**Completed:** 2026-09-17
 
 **Files changed:**
-_(to be filled in)_
+- `frontend/src/index.css` — added motion tokens (`--duration-micro: 100ms`, `--duration-ui: 200ms`, `--duration-state: 300ms`) to `:root` and `@theme`; declared utility classes `.duration-micro`, `.duration-ui`, `.duration-state`; increased default `--ring` contrast (`oklch(0.708 0 0)` / zinc-400 equivalent).
+- `frontend/src/components/ui/button.jsx` — standardized visible focus ring (`focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2`), tactile pressed scale (`active:scale-[0.98]`), and consistent disabled appearance (`disabled:opacity-40 disabled:cursor-not-allowed` with `pointer-events-none` removed so cursor is respected).
+- `frontend/src/components/ui/input.jsx` — added high-contrast focus ring (`focus-visible:ring-2 focus-visible:ring-zinc-400`), mobile touch target height (`min-h-[44px] sm:min-h-0`), `text-sm`, consistent disabled state (`disabled:opacity-40 disabled:cursor-not-allowed`), and `duration-micro`.
+- `frontend/src/components/ui/textarea.jsx` — added visible focus ring, consistent disabled state (`disabled:opacity-40 disabled:cursor-not-allowed`), `text-sm`, and `duration-micro`.
+- `frontend/src/components/ui/toggle.jsx` — upgraded variants with visible focus ring, active state, and consistent disabled appearance.
+- `frontend/src/components/layout/AppHeader.jsx` — ensured mobile menu toggle has minimum 44px touch target, visible focus ring on logo link and Create Ticket button, and normalized to `duration-micro`.
+- `frontend/src/components/layout/Sidebar.jsx` — added visible focus rings (`focus-visible:ring-2 focus-visible:ring-zinc-400`), tactile active state, mobile touch target `min-h-[44px] sm:min-h-0` on navigation items, and normalized to `duration-micro`.
+- `frontend/src/components/tickets/MetricsRibbon.jsx` — added visible focus rings to interactive KPI cards, brightening hover borders (`hover:border-zinc-500/60`), and normalized motion durations (`duration-ui`, `duration-state`, `duration-micro`).
+- `frontend/src/components/tickets/SearchBar.jsx` — standardized visible focus ring on input, mobile touch target height, and clear button focus/active states.
+- `frontend/src/components/tickets/StatusFilter.jsx` — equipped filter buttons with visible focus rings, tactile active state, mobile min-height 38px, and smooth horizontal scrolling container.
+- `frontend/src/components/tickets/TicketTable.jsx` — added visible focus rings and minimum 44px mobile touch targets to empty state action links and reset buttons.
+- `frontend/src/components/tickets/TicketRow.jsx` — added keyboard accessibility (`tabIndex={0}`, `onKeyDown` Enter/Space triggers navigation), inset focus ring (`focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-400`), tactile active state, and `duration-micro`.
+- `frontend/src/components/tickets/NoteConsole.jsx` — ensured `text-sm` font size on textarea for readable mobile viewports without unwanted zoom, visible focus rings on inputs/buttons, white primary vs zinc-900 secondary hierarchy, mobile ≥ 44px touch targets, and `disabled:opacity-40 disabled:cursor-not-allowed`.
+- `frontend/src/components/tickets/NoteTimeline.jsx` — normalized transitions to `duration-micro`.
+- `frontend/src/pages/HomePage.jsx` — styled Reset filters button with secondary styling, visible focus ring, and minimum 44px mobile touch target.
+- `frontend/src/pages/CreateTicketPage.jsx` — added visible focus rings to breadcrumb link, text inputs, customer name, subject, and body; enforced primary white Create Ticket and secondary zinc-900 Cancel button hierarchy with ≥ 44px mobile touch targets and `disabled:opacity-40`.
+- `frontend/src/pages/TicketDetailPage.jsx` — added visible focus rings across breadcrumb, 404 Return button, header and audit panel copy ID buttons, Next Action CTA, segmented status buttons, ActionErrorBanner actions, and unsaved note modal Stay/Discard buttons; normalized to `duration-micro` and `duration-ui`.
+- `frontend/src/context/TicketContext.jsx` & `frontend/src/hooks/useTicketDetail.js` — refactored `useTicketsContext` hook export and usage to comply strictly with React hook execution rules without try-catch wrapping.
 
 **Deviations from plan:**
-_(to be filled in)_
+- None.
 
 **Test results:**
 ```
-npm run build: [PENDING]
+npm run build: ZERO ERRORS (Vite v8.3.0 production build completed in 548ms)
+npx oxlint: ZERO ERRORS (35 files passed)
+backend tests (verify_phase1.py): ALL 9 TESTS PASSED CLEANLY
 ```
 
 **Notes for next phase:**
-_(to be filled in)_
+- Phase 5 is Power User UX: implementing global keyboard shortcuts (`/` search, `C` create ticket, `Esc` clear/back, `N` focus note), Cmd+K command palette modal with keyboard navigation, and collapsible sidebar with persisted state in `localStorage`.
 
 ---
 

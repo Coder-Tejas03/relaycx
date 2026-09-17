@@ -165,7 +165,7 @@ export default function CreateTicketPage() {
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-all duration-micro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 rounded-sm p-0.5"
           >
             <ArrowLeft size={13} />
             <span>Tickets</span>
@@ -215,8 +215,8 @@ export default function CreateTicketPage() {
                   onBlur={handleBlur}
                   disabled={isSubmitting}
                   className={cn(
-                    "h-9 bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500/40 text-xs sm:text-sm",
-                    touched.customer_name && errors.customer_name && "border-red-500/80 focus-visible:ring-red-500/40"
+                    "h-10 sm:h-9 min-h-[44px] sm:min-h-0 bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:border-transparent transition-all duration-micro",
+                    touched.customer_name && errors.customer_name && "border-red-500 focus-visible:ring-red-400"
                   )}
                 />
                 {touched.customer_name && errors.customer_name && (
@@ -243,8 +243,8 @@ export default function CreateTicketPage() {
                   onBlur={handleBlur}
                   disabled={isSubmitting}
                   className={cn(
-                    "h-9 bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500/40 text-xs sm:text-sm",
-                    (touched.customer_email || formData.customer_email.trim().length > 0) && errors.customer_email && "border-red-500/80 focus-visible:ring-red-500/40"
+                    "h-10 sm:h-9 min-h-[44px] sm:min-h-0 bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:border-transparent transition-all duration-micro",
+                    (touched.customer_email || formData.customer_email.trim().length > 0) && errors.customer_email && "border-red-500 focus-visible:ring-red-400"
                   )}
                 />
                 {(touched.customer_email || formData.customer_email.trim().length > 0) && errors.customer_email && (
@@ -273,8 +273,8 @@ export default function CreateTicketPage() {
                 onBlur={handleBlur}
                 disabled={isSubmitting}
                 className={cn(
-                  "h-9 bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500/40 text-xs sm:text-sm",
-                  touched.subject && errors.subject && "border-red-500/80 focus-visible:ring-red-500/40"
+                  "h-10 sm:h-9 min-h-[44px] sm:min-h-0 bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:border-transparent transition-all duration-micro",
+                  touched.subject && errors.subject && "border-red-500 focus-visible:ring-red-400"
                 )}
               />
               {touched.subject && errors.subject && (
@@ -302,8 +302,8 @@ export default function CreateTicketPage() {
                 onBlur={handleBlur}
                 disabled={isSubmitting}
                 className={cn(
-                  "bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500/40 text-xs sm:text-sm resize-y min-h-[110px]",
-                  touched.description && errors.description && "border-red-500/80 focus-visible:ring-red-500/40"
+                  "bg-[#17171A] border border-white/[0.09] text-zinc-100 placeholder:text-zinc-500 text-sm resize-y min-h-[110px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:border-transparent transition-all duration-micro",
+                  touched.description && errors.description && "border-red-500 focus-visible:ring-red-400"
                 )}
               />
               {touched.description && errors.description && (
@@ -317,7 +317,7 @@ export default function CreateTicketPage() {
             <div className="pt-4 border-t border-white/[0.08] flex items-center justify-end gap-3">
               <Link
                 to="/"
-                className="inline-flex items-center justify-center h-8 px-3.5 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white text-xs font-medium transition-colors"
+                className="inline-flex items-center justify-center min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-4 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white active:scale-[0.98] text-xs font-medium transition-all duration-micro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer select-none shadow-sm"
               >
                 Cancel
               </Link>
@@ -326,7 +326,7 @@ export default function CreateTicketPage() {
                 type="submit"
                 disabled={isSubmitting}
                 title="Create Ticket (⌘↵)"
-                className="inline-flex items-center justify-center gap-1.5 h-8 px-4 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors select-none shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-4 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-all duration-micro select-none shadow-sm cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <span className="inline-flex items-center gap-2">

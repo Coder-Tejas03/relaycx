@@ -39,7 +39,7 @@ function ActionErrorBanner({ error, onDismiss }) {
   return (
     <div
       role="alert"
-      className="flex items-center justify-between gap-3 p-2.5 rounded-lg bg-red-950/40 border border-red-900/60 text-xs text-red-200 animate-in fade-in duration-200"
+      className="flex items-center justify-between gap-3 p-2.5 rounded-lg bg-red-950/40 border border-red-900/60 text-xs text-red-200 animate-in fade-in duration-ui"
     >
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <AlertCircle size={14} className="text-red-400 shrink-0" />
@@ -50,7 +50,7 @@ function ActionErrorBanner({ error, onDismiss }) {
           <button
             type="button"
             onClick={error.retry}
-            className="px-2.5 py-1 rounded bg-red-900/60 hover:bg-red-900 text-red-100 font-medium transition-colors cursor-pointer text-[11px] border border-red-800/80"
+            className="px-2.5 py-1 min-h-[36px] rounded bg-red-900/60 hover:bg-red-900 text-red-100 font-medium transition-all duration-micro cursor-pointer text-[11px] border border-red-800/80 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
           >
             Retry
           </button>
@@ -58,11 +58,11 @@ function ActionErrorBanner({ error, onDismiss }) {
         <button
           type="button"
           onClick={onDismiss}
-          className="p-1 rounded text-red-400 hover:text-red-200 hover:bg-red-900/40 transition-colors cursor-pointer"
+          className="p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded text-red-400 hover:text-red-200 hover:bg-red-900/40 transition-all duration-micro cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
           title="Dismiss error"
           aria-label="Dismiss error"
         >
-          <X size={13} />
+          <X size={14} />
         </button>
       </div>
     </div>
@@ -184,7 +184,7 @@ export default function TicketDetailPage() {
           <Link
             to="/"
             onClick={handleBreadcrumbClick}
-            className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-all duration-micro cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 rounded-sm p-0.5"
           >
             <ArrowLeft size={13} />
             <span>Tickets</span>
@@ -225,7 +225,7 @@ export default function TicketDetailPage() {
               <div className="pt-2">
                 <Link
                   to="/"
-                  className="inline-flex items-center justify-center h-8 px-4 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors"
+                  className="inline-flex items-center justify-center min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-4 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-all duration-micro active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                 >
                   Return to Queue
                 </Link>
@@ -250,13 +250,13 @@ export default function TicketDetailPage() {
                       type="button"
                       onClick={handleCopyTicketId}
                       title="Click to copy Ticket ID"
-                      className="group inline-flex items-center gap-1.5 font-mono-id tracking-wider text-xs text-zinc-400 hover:text-zinc-200 font-semibold cursor-pointer transition-colors"
+                      className="group inline-flex items-center gap-1.5 font-mono-id tracking-wider text-xs text-zinc-400 hover:text-zinc-200 font-semibold cursor-pointer transition-all duration-micro active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 rounded-sm p-0.5"
                     >
                       <span>{ticket.ticket_id}</span>
                       {copiedId ? (
                         <Check size={13} className="text-emerald-400" />
                       ) : (
-                        <Copy size={13} className="text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                        <Copy size={13} className="text-zinc-500 group-hover:text-zinc-300 transition-colors duration-micro" />
                       )}
                     </button>
                     <h1 className="mt-1 text-xl sm:text-2xl font-semibold tracking-tight text-white">
@@ -277,13 +277,13 @@ export default function TicketDetailPage() {
                     type="button"
                     onClick={handleCopyEmail}
                     title="Click to copy email"
-                    className="group inline-flex items-center gap-1.5 font-mono-id text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                    className="group inline-flex items-center gap-1.5 font-mono-id text-zinc-400 hover:text-white transition-all duration-micro cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 rounded-sm p-0.5"
                   >
                     <span>{ticket.customer_email}</span>
                     {copiedEmail ? (
                       <Check size={13} className="text-emerald-400" />
                     ) : (
-                      <Copy size={13} className="text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                      <Copy size={13} className="text-zinc-500 group-hover:text-zinc-300 transition-colors duration-micro" />
                     )}
                   </button>
                 </div>
@@ -355,7 +355,7 @@ export default function TicketDetailPage() {
                     type="button"
                     disabled={isSubmitting}
                     onClick={() => handleStatusChange("In Progress")}
-                    className="w-full h-11 px-4 rounded-lg bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md select-none active:scale-[0.99]"
+                    className="w-full h-11 px-4 rounded-lg bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all duration-micro flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md select-none active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                   >
                     {isSubmitting ? (
                       <>
@@ -377,7 +377,7 @@ export default function TicketDetailPage() {
                     type="button"
                     disabled={isSubmitting}
                     onClick={() => handleStatusChange("Closed")}
-                    className="w-full h-11 px-4 rounded-lg bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md select-none active:scale-[0.99]"
+                    className="w-full h-11 px-4 rounded-lg bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all duration-micro flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md select-none active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                   >
                     {isSubmitting ? (
                       <>
@@ -399,7 +399,7 @@ export default function TicketDetailPage() {
                     type="button"
                     disabled={isSubmitting}
                     onClick={() => handleStatusChange("Open")}
-                    className="w-full h-11 px-4 rounded-lg bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 hover:border-amber-500/50 hover:text-amber-300 text-zinc-100 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm select-none active:scale-[0.99]"
+                    className="w-full h-11 px-4 rounded-lg bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 hover:border-amber-500/50 hover:text-amber-300 text-zinc-100 font-semibold text-sm transition-all duration-micro flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm select-none active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
                   >
                     {isSubmitting ? (
                       <>
@@ -445,10 +445,10 @@ export default function TicketDetailPage() {
                         disabled={isSubmitting}
                         onClick={() => handleStatusChange(statusOption)}
                         className={cn(
-                          "flex-1 py-1.5 text-xs font-medium rounded-md transition-all cursor-pointer text-center select-none",
+                          "flex-1 py-2 sm:py-1.5 min-h-[38px] sm:min-h-0 text-xs font-medium rounded-md transition-all duration-micro cursor-pointer text-center select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed",
                           isCurrent
                             ? "bg-zinc-800 text-white shadow-sm border border-zinc-700/60 font-semibold"
-                            : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50"
+                            : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50 active:bg-zinc-850"
                         )}
                       >
                         {statusOption}
@@ -506,13 +506,13 @@ export default function TicketDetailPage() {
                     type="button"
                     onClick={handleCopyTicketId}
                     title="Click to copy Ticket ID"
-                    className="group inline-flex items-center gap-1.5 font-mono-id text-zinc-200 hover:text-white cursor-pointer transition-colors"
+                    className="group inline-flex items-center gap-1.5 font-mono-id text-zinc-200 hover:text-white cursor-pointer transition-all duration-micro active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 rounded-sm p-0.5"
                   >
                     <span>{ticket.ticket_id}</span>
                     {copiedId ? (
                       <Check size={12} className="text-emerald-400" />
                     ) : (
-                      <Copy size={12} className="text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                      <Copy size={12} className="text-zinc-500 group-hover:text-zinc-300 transition-colors duration-micro" />
                     )}
                   </button>
                 </div>
@@ -576,7 +576,7 @@ export default function TicketDetailPage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="unsaved-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-ui"
         >
           <div className="relative w-full max-w-md rounded-xl border border-white/[0.12] bg-[#212124] p-5 sm:p-6 shadow-2xl space-y-4">
             <div className="flex items-start gap-3">
@@ -600,7 +600,7 @@ export default function TicketDetailPage() {
                   setShowUnsavedModal(false);
                   setPendingNavigation(null);
                 }}
-                className="h-8 px-3.5 rounded-md border border-zinc-700/80 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white text-xs font-medium transition-colors cursor-pointer"
+                className="inline-flex items-center justify-center min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-4 rounded-md border border-zinc-700/80 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white active:scale-[0.98] text-xs font-medium transition-all duration-micro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer shadow-sm"
               >
                 Stay
               </button>
@@ -617,7 +617,7 @@ export default function TicketDetailPage() {
                     navigate("/");
                   }
                 }}
-                className="h-8 px-3.5 rounded-md bg-red-600 hover:bg-red-500 text-white text-xs font-medium transition-colors cursor-pointer shadow-sm"
+                className="inline-flex items-center justify-center min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-4 rounded-md bg-red-950 border border-red-800 text-red-300 hover:bg-red-900/80 active:scale-[0.98] text-xs font-medium transition-all duration-micro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer shadow-sm"
               >
                 Discard
               </button>

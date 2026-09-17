@@ -58,8 +58,32 @@
   --accent-foreground: #EDEDED;
   --destructive: #EF4444;
   --input: #17171A;
-  --ring: rgba(255, 255, 255, 0.25);
+  --ring: rgba(161, 161, 170, 0.7); /* Zinc-400 crisp focus ring */
   --radius: 0.5rem;
+
+  /* Normalized Motion System Tokens */
+  --duration-micro: 100ms;   /* hover, icon swap */
+  --duration-ui: 200ms;      /* filter changes, panel transitions */
+  --duration-state: 300ms;   /* status badge changes, major state transitions */
+}
+
+@theme {
+  --duration-micro: 100ms;
+  --duration-ui: 200ms;
+  --duration-state: 300ms;
+}
+
+/* Motion duration utility classes */
+.duration-micro {
+  transition-duration: var(--duration-micro, 100ms);
+}
+
+.duration-ui {
+  transition-duration: var(--duration-ui, 200ms);
+}
+
+.duration-state {
+  transition-duration: var(--duration-state, 300ms);
 }
 
 /* App-wide background and font */

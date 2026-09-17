@@ -18,12 +18,7 @@ export function useTicketDetail(ticketId) {
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState(null);
 
-  let ticketsContext = null;
-  try {
-    ticketsContext = useTicketsContext();
-  } catch {
-    // Graceful fallback if used outside TicketProvider
-  }
+  const ticketsContext = useTicketsContext();
 
   const ticketRef = useRef(ticket);
   ticketRef.current = ticket;

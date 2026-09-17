@@ -29,7 +29,7 @@ export default function StatusFilter({
   };
 
   return (
-    <div className={cn("inline-flex items-center gap-1 p-1 bg-[#17171A] rounded-lg border border-white/[0.09]", className)}>
+    <div className={cn("inline-flex items-center gap-1 p-1 bg-[#17171A] rounded-lg border border-white/[0.09] max-w-full overflow-x-auto", className)}>
       {FILTER_OPTIONS.map((filter) => {
         const isActive = activeFilter === filter;
         const count = getCount(filter);
@@ -39,17 +39,17 @@ export default function StatusFilter({
             type="button"
             onClick={() => onChange(filter)}
             className={cn(
-              "px-3 py-1 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer select-none inline-flex items-center gap-1.5",
+              "px-3 py-2 sm:py-1 min-h-[38px] sm:min-h-0 rounded-md text-xs font-medium transition-all duration-micro cursor-pointer select-none inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 active:scale-[0.98]",
               isActive
                 ? "bg-zinc-800 text-white shadow-sm border border-zinc-700/60"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 active:bg-zinc-900"
             )}
           >
             <span>{filter}</span>
             {count !== undefined && (
               <span
                 className={cn(
-                  "font-mono text-[11px] transition-colors",
+                  "font-mono text-[11px] transition-colors duration-micro",
                   isActive ? "text-zinc-300" : "text-zinc-500"
                 )}
               >

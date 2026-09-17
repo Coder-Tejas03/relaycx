@@ -75,7 +75,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 border border-zinc-700/60 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 shrink-0 select-none"
+                className="px-3 py-2 sm:py-1.5 min-h-[44px] sm:min-h-0 rounded-lg text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-all duration-micro cursor-pointer whitespace-nowrap flex items-center gap-1.5 shrink-0 select-none shadow-sm"
                 title="Reset all search and status filters"
               >
                 <span>Reset</span>

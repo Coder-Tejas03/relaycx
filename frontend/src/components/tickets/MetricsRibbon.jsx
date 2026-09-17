@@ -95,29 +95,29 @@ export default function MetricsRibbon({ stats, isLoading = false, onCardClick })
             }}
             title={card.tooltip}
             className={cn(
-              "group relative overflow-hidden rounded-xl border border-white/[0.09] bg-[#212124] p-4.5 transition-all duration-200 shadow-sm text-left select-none",
+              "group relative overflow-hidden rounded-xl border border-white/[0.09] bg-[#212124] p-4.5 transition-all duration-ui shadow-sm text-left select-none",
               card.isClickable
-                ? "cursor-pointer hover:border-white/[0.25] hover:shadow-lg active:scale-[0.99] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400"
+                ? "cursor-pointer hover:border-zinc-500/60 hover:shadow-lg active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
                 : "cursor-default"
             )}
           >
             {/* Subtle top edge specular highlight tinted to card theme */}
             <div
               className={cn(
-                "absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r transition-opacity duration-200 opacity-70 group-hover:opacity-100",
+                "absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r transition-opacity duration-ui opacity-70 group-hover:opacity-100",
                 card.topLine
               )}
             />
 
             {/* Fading color gradient travelling from top-right to left (OpenAI Codex style) */}
             <div
-              className="pointer-events-none absolute inset-0 rounded-xl transition-opacity duration-300 opacity-80 group-hover:opacity-100"
+              className="pointer-events-none absolute inset-0 rounded-xl transition-opacity duration-state opacity-80 group-hover:opacity-100"
               style={{ background: card.gradient }}
             />
 
             {/* Soft atmospheric ambient blur in the top right corner */}
             <div
-              className="pointer-events-none absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl transition-all duration-300 opacity-60 group-hover:opacity-90"
+              className="pointer-events-none absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl transition-all duration-state opacity-60 group-hover:opacity-90"
               style={{ background: card.glowColor }}
             />
 
@@ -131,7 +131,7 @@ export default function MetricsRibbon({ stats, isLoading = false, onCardClick })
                 {/* Subtle themed icon nestled inside the top-right gradient bloom */}
                 <Icon
                   size={15}
-                  className={cn("transition-colors duration-200", card.iconColor)}
+                  className={cn("transition-colors duration-micro", card.iconColor)}
                 />
               </div>
 

@@ -22,7 +22,7 @@ export default function SearchBar({
     <div className={cn("relative flex items-center w-full max-w-md", className)}>
       <div
         className={cn(
-          "absolute left-3.5 flex items-center pointer-events-none transition-colors duration-150",
+          "absolute left-3.5 flex items-center pointer-events-none transition-colors duration-micro",
           hasValue ? "text-zinc-200" : "text-zinc-500"
         )}
       >
@@ -37,10 +37,10 @@ export default function SearchBar({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "w-full h-9 pl-9 pr-9 rounded-lg bg-[#17171A] border border-white/[0.09]",
-          "text-xs text-zinc-100 placeholder:text-zinc-500",
-          "focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-600/40",
-          "transition-all duration-150"
+          "w-full h-10 sm:h-9 min-h-[44px] sm:min-h-0 pl-9 pr-9 rounded-lg bg-[#17171A] border border-white/[0.09]",
+          "text-sm sm:text-xs text-zinc-100 placeholder:text-zinc-500",
+          "focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:border-transparent",
+          "transition-all duration-micro"
         )}
       />
 
@@ -49,10 +49,10 @@ export default function SearchBar({
           type="button"
           onClick={() => onChange("")}
           aria-label="Clear search"
-          className="absolute right-2.5 p-1 rounded-full text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="absolute right-1.5 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-full text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 active:scale-90 active:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-all duration-micro cursor-pointer"
         >
           <svg
-            className="w-3 h-3"
+            className="w-3.5 h-3.5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

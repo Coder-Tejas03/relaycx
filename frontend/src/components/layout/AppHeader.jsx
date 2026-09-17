@@ -20,15 +20,15 @@ export function AppHeader({ mobileMenuOpen = false, onToggleMobileMenu }) {
               type="button"
               onClick={onToggleMobileMenu}
               aria-label="Toggle navigation menu"
-              className="flex md:hidden size-8 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-white transition-colors"
+              className="flex md:hidden min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-white hover:bg-zinc-800 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-all duration-micro cursor-pointer"
             >
-              {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           )}
 
           <Link
             to="/"
-            className="flex items-center gap-2.5 text-sm font-semibold tracking-tight text-white hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2.5 text-sm font-semibold tracking-tight text-white hover:opacity-90 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 rounded-md p-0.5 transition-all duration-micro"
           >
             {/* Vercel-style monochrome [R] block */}
             <span className="flex size-6 items-center justify-center rounded-md bg-zinc-900 border border-zinc-800 text-xs font-mono font-bold text-zinc-100 shadow-sm">
@@ -42,7 +42,7 @@ export function AppHeader({ mobileMenuOpen = false, onToggleMobileMenu }) {
         <div className="flex items-center gap-3">
           <Link
             to="/tickets/new"
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors select-none shadow-sm cursor-pointer shrink-0"
+            className="inline-flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-all duration-micro select-none shadow-sm cursor-pointer shrink-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
             <Plus size={14} strokeWidth={2.5} />
             <span>Create Ticket</span>

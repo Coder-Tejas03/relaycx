@@ -53,10 +53,10 @@ export function Sidebar({ onNavigate }) {
               onClick={handleInboxClick}
               title="Open tickets requiring agent attention"
               className={cn(
-                "w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer",
+                "w-full flex items-center justify-between px-2.5 py-2.5 sm:py-2 min-h-[44px] sm:min-h-0 rounded-lg text-xs font-medium transition-all duration-micro cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 active:scale-[0.99]",
                 isInboxActive
                   ? "bg-zinc-900 text-white border border-zinc-800 shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60"
+                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 active:bg-zinc-800"
               )}
             >
               <div className="flex items-center gap-2.5">
@@ -74,10 +74,10 @@ export function Sidebar({ onNavigate }) {
               onClick={handleAllTicketsClick}
               title="All tickets in support queue"
               className={cn(
-                "w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer",
+                "w-full flex items-center justify-between px-2.5 py-2.5 sm:py-2 min-h-[44px] sm:min-h-0 rounded-lg text-xs font-medium transition-all duration-micro cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 active:scale-[0.99]",
                 isAllTicketsActive
                   ? "bg-zinc-900 text-white border border-zinc-800 shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60"
+                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 active:bg-zinc-800"
               )}
             >
               <div className="flex items-center gap-2.5">

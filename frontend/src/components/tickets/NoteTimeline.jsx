@@ -87,7 +87,7 @@ export default function NoteTimeline({ notes = [] }) {
               <div
                 key={note.id || `note-${index}`}
                 className={cn(
-                  "relative flex items-start gap-3 transition-opacity",
+                  "relative flex items-start gap-3 transition-opacity duration-micro",
                   isPending && "opacity-75"
                 )}
               >
@@ -100,7 +100,7 @@ export default function NoteTimeline({ notes = [] }) {
                 </div>
 
                 {/* Event content card */}
-                <div className="flex-1 rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5 space-y-2 hover:border-zinc-700/80 transition-all shadow-sm">
+                <div className="flex-1 rounded-lg border border-zinc-800/80 bg-zinc-950/60 p-3.5 space-y-2 hover:border-zinc-700/80 transition-all duration-micro shadow-sm">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <span
@@ -122,7 +122,7 @@ export default function NoteTimeline({ notes = [] }) {
                     <time
                       dateTime={note.created_at}
                       title={formatDateTime(note.created_at)}
-                      className="text-xs font-mono-id text-zinc-500 hover:text-zinc-300 transition-colors cursor-default"
+                      className="text-xs font-mono-id text-zinc-500 hover:text-zinc-300 transition-colors duration-micro cursor-default"
                     >
                       {formatRelativeTime(note.created_at)}
                     </time>

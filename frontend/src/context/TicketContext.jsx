@@ -194,8 +194,5 @@ export function TicketProvider({ children }) {
 
 export function useTicketsContext() {
   const context = useContext(TicketContext);
-  if (!context) {
-    throw new Error("useTicketsContext must be used within a TicketProvider");
-  }
   return context;
 }

@@ -30,8 +30,15 @@ export default function TicketRow({ ticket }) {
 
   return (
     <tr
+      tabIndex={0}
       onClick={handleRowClick}
-      className="group border-b border-zinc-800/60 hover:bg-zinc-900/60 cursor-pointer transition-colors duration-150 select-none"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleRowClick();
+        }
+      }}
+      className="group border-b border-zinc-800/60 hover:bg-zinc-900/60 active:bg-zinc-900 cursor-pointer transition-colors duration-micro select-none focus-visible:outline-none focus-visible:bg-zinc-900/90 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-400"
     >
       {/* Monospace Ticket ID */}
       <td className="py-3 px-4 font-mono-id whitespace-nowrap font-medium text-zinc-400 group-hover:text-zinc-100 transition-colors">

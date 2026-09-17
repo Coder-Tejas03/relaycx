@@ -35,7 +35,7 @@ export default function TicketTable({
         action: (
           <Link
             to="/tickets/new"
-            className="inline-flex items-center justify-center h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors cursor-pointer select-none shadow-sm mt-2"
+            className="inline-flex items-center justify-center min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-all duration-micro cursor-pointer select-none shadow-sm mt-2 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
             Create Ticket
           </Link>
@@ -54,7 +54,7 @@ export default function TicketTable({
             variant="outline"
             size="sm"
             onClick={onResetFilters}
-            className="mt-2 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
+            className="mt-2 min-h-[44px] sm:min-h-0 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
           >
             Clear Search
           </Button>
@@ -73,7 +73,7 @@ export default function TicketTable({
             variant="outline"
             size="sm"
             onClick={onResetFilters}
-            className="mt-2 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
+            className="mt-2 min-h-[44px] sm:min-h-0 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
           >
             View All Tickets
           </Button>
@@ -92,7 +92,7 @@ export default function TicketTable({
             variant="outline"
             size="sm"
             onClick={onResetFilters}
-            className="mt-2 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
+            className="mt-2 min-h-[44px] sm:min-h-0 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
           >
             View All Tickets
           </Button>
@@ -110,7 +110,7 @@ export default function TicketTable({
           variant="outline"
           size="sm"
           onClick={onResetFilters}
-          className="mt-2 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
+          className="mt-2 min-h-[44px] sm:min-h-0 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
         >
           Reset Filters
         </Button>
