@@ -103,7 +103,6 @@ export function useTicketDetail(ticketId) {
     // 2. Fire network request
     try {
       const result = await ticketApi.update(ticketId, { status: newStatus });
-      toast.success(`Ticket status updated to "${newStatus}"`);
 
       // Update timestamps & sync with backend and global context
       setTicket((prev) => {
@@ -203,7 +202,6 @@ export function useTicketDetail(ticketId) {
     // 2. Fire network request
     try {
       await ticketApi.update(ticketId, { note_text: trimmed });
-      toast.success("Internal note added successfully");
 
       ticketsContext?.refresh(true);
 
@@ -288,7 +286,6 @@ export function useTicketDetail(ticketId) {
         note_text: trimmed,
         status: "Closed",
       });
-      toast.success("Ticket resolved and note logged!");
 
       ticketsContext?.refresh(true);
 

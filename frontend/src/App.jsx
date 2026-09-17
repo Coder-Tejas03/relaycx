@@ -23,7 +23,7 @@ function AppContent() {
 
   return (
     <>
-      <Toaster position="bottom-right" richColors={false} theme="dark" />
+      <Toaster position="bottom-right" theme="dark" />
       <AppShell>
         <Routes>
           <Route path="/" element={<HomePage />} />

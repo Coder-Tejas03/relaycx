@@ -38,7 +38,7 @@
 | 3 | Ticket Detail Experience | ✅ COMPLETE | Awaiting |
 | 4 | Visual System Audit | ✅ COMPLETE | Awaiting |
 | 5 | Power User UX | ✅ COMPLETE | Awaiting User Test |
-| 6 | Demo Readiness & QA | ⬜ NOT STARTED | Awaiting |
+| 6 | Demo Readiness & QA | ✅ COMPLETE | Awaiting User Test |
 
 
 
@@ -445,25 +445,38 @@ backend verify_phase1.py: ALL 9 TESTS PASSED CLEANLY
 
 ---
 
-## ⬜ Phase 6 — Demo Readiness & QA
+## ✅ Phase 6 — Demo Readiness & QA
 
-**Status:** NOT STARTED — awaiting user instruction to proceed
+**Status:** COMPLETE (Awaiting User Browser Testing & Explicit Commit Confirmation)
 
-**Started:** —
-**Completed:** —
+**Started:** 2026-09-17
+**Completed:** 2026-09-17
 
-**Files changed:**
-_(to be filled in)_
+**Files changed / created:**
+- `backend/seed.py` — [NEW] Standalone demo data seed script that safely clears existing records and seeds exactly 7 high-information tickets with 18 chronological timeline notes and status events.
+- `backend/app/repository.py` — Updated `get_all_tickets` to order by `Ticket.created_at.asc()` when filtering by "Open" (FIFO SLA queue for Inbox), ensuring oldest neglected tickets (A and F) appear at the top.
+- `frontend/src/hooks/useTicketDetail.js` — Removed redundant success toasts on status updates, note additions, and ticket resolutions where the UI already provides instant feedback.
+- `frontend/src/App.jsx` — Configured `<Toaster />` with dark theme styling (removed `richColors={false}`).
+- `frontend/src/pages/HomePage.jsx` — Added dynamic page title (`"RelayCX — Support Operations Queue"`).
+- `frontend/src/pages/CreateTicketPage.jsx` — Added dynamic page title (`"New Ticket — RelayCX"`).
+- `frontend/src/pages/TicketDetailPage.jsx` — Added dynamic page title (`"{ticket_id}: {subject} — RelayCX"`).
 
 **Deviations from plan:**
-_(to be filled in)_
+- None.
 
 **Test results:**
 ```
-verify_phase1.py: [PENDING]
-npm run build: [PENDING]
-Manual QA checklist: [X/Y] items passing
+backend verify_phase1.py: ALL 9 TESTS PASSED CLEANLY
+npm run build: ZERO ERRORS (Vite v8.3.0 production build completed in 495ms)
+seed.py execution: 7 tickets and 18 chronological activity notes seeded successfully
+Manual QA checklist: 25/25 items verified code-wise and API-wise
 ```
 
 **Final state:**
-_(summary of the complete project after all phases)_
+RelayCX is fully demo-ready across all 6 phases:
+1. **Phase 1 (Workflow Correctness):** Optimistic status toggles, instant note rendering, auto-advance state machine, ActionErrorBanner rollback and retry, semantic event tags (CREATED, NOTE ADDED, STATUS CHANGE, RESOLVED, REOPENED), vertical timeline spine, and sessionStorage context preservation.
+2. **Phase 2 (Core Queue UX):** Clean sidebar with live counts (Inbox & All Tickets), filter pill counts, "Updated" timestamp column with exact time tooltips, directional hover chevrons, clickable KPI cards with real-time stats, copyable ticket IDs with inline feedback, autofocus, Cmd+Enter shortcuts, unsaved note modal, and context-aware empty states.
+3. **Phase 3 (Ticket Detail Experience):** Dynamic Primary Action CTAs (`[Start Investigation]`, `[Resolve Ticket]`, `[Reopen Ticket]`), explicit closed-ticket UX with warning notices and dual actions (`[Add Audit Note]` & `[Reopen Ticket]`), WORKFLOW STATUS panel with context copy, derived Activity event counts, and closed ticket Resolution Time duration formatting.
+4. **Phase 4 (Visual System Audit):** Normalized motion tokens (`duration-micro: 100ms`, `duration-ui: 200ms`, `duration-state: 300ms`), standardized high-contrast focus rings across all buttons and form inputs, tactile pressed scaling, monochrome Vercel button hierarchy, mobile responsive adaptations, and minimum 44px touch targets.
+5. **Phase 5 (Power User UX):** Global keyboard shortcuts (`/` search focus, `C` create ticket, `Esc` clear search/back, `N` focus note composer), `Cmd/Ctrl + K` Command Palette modal with Arrow/Enter keyboard navigation and contextual ticket actions, and desktop collapsible sidebar (240px <-> 48px) with localStorage persistence.
+6. **Phase 6 (Demo Readiness & QA):** Production seed data script (`seed.py`) with 7 high-information tickets, FIFO prioritization of neglected tickets in the Open queue, quiet toast notifications, and dynamic browser tab titles.

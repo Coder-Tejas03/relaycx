@@ -33,8 +33,9 @@ export default function CreateTicketPage() {
   const [touched, setTouched] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Autofocus Customer Name input when page opens
+  // Autofocus Customer Name input and set page title when page opens
   useEffect(() => {
+    document.title = "New Ticket — RelayCX";
     nameInputRef.current?.focus();
   }, []);
 

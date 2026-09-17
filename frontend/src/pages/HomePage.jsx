@@ -25,6 +25,7 @@ export default function HomePage() {
 
   // Silently refresh the queue on mount to ensure fresh state when returning from detail or create pages
   React.useEffect(() => {
+    document.title = "RelayCX — Support Operations Queue";
     refresh(true);
   }, [refresh]);
 

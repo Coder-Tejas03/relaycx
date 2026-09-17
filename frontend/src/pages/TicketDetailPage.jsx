@@ -204,6 +204,15 @@ export default function TicketDetailPage() {
     };
   }, [handleBreadcrumbClick]);
 
+  // Set dynamic document title reflecting ticket ID and subject
+  React.useEffect(() => {
+    if (ticket?.ticket_id) {
+      document.title = `${ticket.ticket_id}: ${ticket.subject} — RelayCX`;
+    } else {
+      document.title = "Ticket Detail — RelayCX";
+    }
+  }, [ticket]);
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       {/* Crisp Breadcrumb Navigation */}

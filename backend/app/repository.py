@@ -59,6 +59,10 @@ def get_all_tickets(
             )
         )
 
+    # When viewing Open queue (Inbox / Needs Attention), prioritize oldest neglected tickets first (FIFO)
+    if status_filter and status_filter.lower() == "open":
+        return query.order_by(Ticket.created_at.asc()).all()
+
     return query.order_by(Ticket.created_at.desc()).all()
 
 
