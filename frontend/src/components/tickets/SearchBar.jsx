@@ -36,6 +36,7 @@ export default function SearchBar({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        title="Search tickets (/)"
         className={cn(
           "w-full h-10 sm:h-9 min-h-[44px] sm:min-h-0 pl-9 pr-9 rounded-lg bg-[#17171A] border border-white/[0.09]",
           "text-sm sm:text-xs text-zinc-100 placeholder:text-zinc-500",

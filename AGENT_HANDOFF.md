@@ -36,8 +36,8 @@
 | 1 | Workflow Correctness | ✅ COMPLETE | Awaiting |
 | 2 | Core Queue UX | ✅ COMPLETE | Awaiting |
 | 3 | Ticket Detail Experience | ✅ COMPLETE | Awaiting |
-| 4 | Visual System Audit | ⬜ NOT STARTED | Awaiting |
-| 5 | Power User UX | ⬜ NOT STARTED | Awaiting |
+| 4 | Visual System Audit | ✅ COMPLETE | Awaiting |
+| 5 | Power User UX | ✅ COMPLETE | Awaiting User Test |
 | 6 | Demo Readiness & QA | ⬜ NOT STARTED | Awaiting |
 
 
@@ -413,26 +413,35 @@ backend tests (verify_phase1.py): ALL 9 TESTS PASSED CLEANLY
 
 ---
 
-## ⬜ Phase 5 — Power User UX
+## ✅ Phase 5 — Power User UX
 
-**Status:** NOT STARTED — awaiting user instruction to proceed
+**Status:** COMPLETE (Awaiting User Browser Testing & Explicit Commit Confirmation)
 
-**Started:** —
-**Completed:** —
+**Started:** 2026-09-17
+**Completed:** 2026-09-17
 
-**Files changed:**
-_(to be filled in)_
+**Files changed / created:**
+- `frontend/src/hooks/useKeyboardShortcuts.js` — [NEW] Global keyboard shortcut handler for `/` (focus search), `C` (create ticket), `Escape` (clear search / navigate back), `N` (focus note), and `Cmd/Ctrl + K` (toggle command palette). Includes input tag guards, modifier key collision protection, and event dispatching for ticket detail pages.
+- `frontend/src/components/CommandPalette.jsx` — [NEW] Lightweight, zero-external-library command palette modal using `motion/react`. Provides instant keyboard navigation (Arrow Up/Down, Enter to execute, Escape to close, Tab focus trap), real-time query filtering, shortcut badges, and contextual ticket actions (`Add internal note`, `Mark In Progress`, `Resolve ticket`, `Reopen ticket`).
+- `frontend/src/App.jsx` — Mounted `useKeyboardShortcuts` and `<CommandPalette />` within `BrowserRouter` and `TicketProvider` context.
+- `frontend/src/components/layout/AppShell.jsx` — Managed `sidebarCollapsed` state with `localStorage` persistence (`"relaycx_sidebar_collapsed"`); wired collapse state and toggle handler to `Sidebar`.
+- `frontend/src/components/layout/Sidebar.jsx` — Implemented desktop collapsible sidebar (240px expanded <-> 48px collapsed icon-only) with smooth 200ms transitions (`duration-ui`), native `title` tooltips for icon buttons, and visible desktop collapse toggle button (`PanelLeftClose` / `PanelLeftOpen`).
+- `frontend/src/pages/TicketDetailPage.jsx` — Registered custom event listeners for `relaycx:ticket-status-change` (command palette status triggers) and `relaycx:navigate-back` (Escape key back navigation respecting unsaved notes).
+- `frontend/src/components/tickets/SearchBar.jsx` — Added native hover tooltip `title="Search tickets (/)"`.
+- `frontend/src/components/layout/AppHeader.jsx` — Added native hover tooltip `title="Create Ticket (C)"`.
 
 **Deviations from plan:**
-_(to be filled in)_
+- None. All requirements and acceptance criteria implemented with pure React state and native browser capabilities without introducing unnecessary third-party libraries.
 
 **Test results:**
 ```
-npm run build: [PENDING]
+npm run build: ZERO ERRORS (Vite v8.3.0 production build completed in 455ms)
+npx oxlint: ZERO ERRORS (37 files passed clean)
+backend verify_phase1.py: ALL 9 TESTS PASSED CLEANLY
 ```
 
 **Notes for next phase:**
-_(to be filled in)_
+- Phase 6 is Demo Readiness & QA: generating realistic seed data script (`backend/seed.py`) with 7 high-information tickets, removing any leftover developer artifacts or console logs, and executing the full manual QA checklist.
 
 ---
 

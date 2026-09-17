@@ -42,6 +42,7 @@ export function AppHeader({ mobileMenuOpen = false, onToggleMobileMenu }) {
         <div className="flex items-center gap-3">
           <Link
             to="/tickets/new"
+            title="Create Ticket (C)"
             className="inline-flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-all duration-micro select-none shadow-sm cursor-pointer shrink-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
             <Plus size={14} strokeWidth={2.5} />

@@ -115,8 +115,8 @@ export default function TicketDetailPage() {
     }
   };
 
-  const handleBreadcrumbClick = (e) => {
-    e.preventDefault();
+  const handleBreadcrumbClick = React.useCallback((e) => {
+    e?.preventDefault?.();
     if (hasUnsavedNotes) {
       setPendingNavigation(() => () => {
         setNoteText("");
@@ -126,7 +126,7 @@ export default function TicketDetailPage() {
     } else {
       navigate("/");
     }
-  };
+  }, [hasUnsavedNotes, navigate, setNoteText]);
 
   // Intercept beforeunload and in-app navigation when unsaved notes exist
   React.useEffect(() => {
@@ -175,6 +175,34 @@ export default function TicketDetailPage() {
       document.removeEventListener("click", handleDocumentClickCapture, true);
     };
   }, [hasUnsavedNotes, navigate, setNoteText]);
+
+  // Listen for status change events dispatched from Command Palette
+  React.useEffect(() => {
+    const handleStatusEvent = (e) => {
+      const newStatus = e.detail?.status;
+      if (newStatus && ticket) {
+        handleStatusChange(newStatus);
+      }
+    };
+
+    window.addEventListener("relaycx:ticket-status-change", handleStatusEvent);
+    return () => {
+      window.removeEventListener("relaycx:ticket-status-change", handleStatusEvent);
+    };
+  }, [ticket, handleStatusChange]);
+
+  // Listen for Escape back navigation from useKeyboardShortcuts
+  React.useEffect(() => {
+    const handleBackEvent = (e) => {
+      e.preventDefault();
+      handleBreadcrumbClick(e);
+    };
+
+    window.addEventListener("relaycx:navigate-back", handleBackEvent);
+    return () => {
+      window.removeEventListener("relaycx:navigate-back", handleBackEvent);
+    };
+  }, [handleBreadcrumbClick]);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
