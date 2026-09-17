@@ -8,15 +8,19 @@ import { cn } from "@/lib/utils";
  * inspired by the OpenAI Codex dashboard.
  * @param {object} props
  * @param {object} props.stats - { total, open, inProgress, closed, resolutionRate }
- * @param {boolean} props.isLoading - Loading state
+ * @param {boolean} [props.isLoading] - Loading state
+ * @param {function(string): void} [props.onCardClick] - Callback when clickable KPI card is selected
  */
-export default function MetricsRibbon({ stats, isLoading = false }) {
+export default function MetricsRibbon({ stats, isLoading = false, onCardClick }) {
   const cards = [
     {
       title: "Total Volume",
       value: stats.total,
       subtitle: "Total customer inquiries",
       icon: Layers,
+      targetFilter: "All",
+      isClickable: true,
+      tooltip: "Click to show all tickets",
       gradient:
         "radial-gradient(ellipse 130% 100% at 100% 0%, rgba(139, 92, 246, 0.22) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 72%)",
       topLine: "from-transparent via-violet-400/40 to-transparent",
@@ -28,6 +32,9 @@ export default function MetricsRibbon({ stats, isLoading = false }) {
       value: stats.open,
       subtitle: "Open backlog tickets",
       icon: AlertCircle,
+      targetFilter: "Open",
+      isClickable: true,
+      tooltip: "Click to filter Open tickets",
       gradient:
         "radial-gradient(ellipse 130% 100% at 100% 0%, rgba(59, 130, 246, 0.25) 0%, rgba(14, 165, 233, 0.09) 40%, transparent 72%)",
       topLine: "from-transparent via-blue-400/45 to-transparent",
@@ -39,6 +46,9 @@ export default function MetricsRibbon({ stats, isLoading = false }) {
       value: stats.inProgress,
       subtitle: "In-flight investigations",
       icon: Clock,
+      targetFilter: "In Progress",
+      isClickable: true,
+      tooltip: "Click to filter In Progress tickets",
       gradient:
         "radial-gradient(ellipse 130% 100% at 100% 0%, rgba(245, 158, 11, 0.22) 0%, rgba(234, 88, 12, 0.08) 40%, transparent 72%)",
       topLine: "from-transparent via-amber-400/45 to-transparent",
@@ -48,8 +58,11 @@ export default function MetricsRibbon({ stats, isLoading = false }) {
     {
       title: "Resolution Rate",
       value: `${stats.resolutionRate}%`,
-      subtitle: `${stats.closed} resolved inquiries`,
+      subtitle: `${stats.closed} of ${stats.total} resolved`,
       icon: CheckCircle2,
+      targetFilter: null,
+      isClickable: false,
+      tooltip: undefined,
       gradient:
         "radial-gradient(ellipse 130% 100% at 100% 0%, rgba(16, 185, 129, 0.22) 0%, rgba(20, 184, 166, 0.08) 40%, transparent 72%)",
       topLine: "from-transparent via-emerald-400/45 to-transparent",
@@ -58,6 +71,12 @@ export default function MetricsRibbon({ stats, isLoading = false }) {
     },
   ];
 
+  const handleCardAction = (card) => {
+    if (card.isClickable && onCardClick && card.targetFilter) {
+      onCardClick(card.targetFilter);
+    }
+  };
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
       {cards.map((card, idx) => {
@@ -65,7 +84,22 @@ export default function MetricsRibbon({ stats, isLoading = false }) {
         return (
           <div
             key={idx}
-            className="group relative overflow-hidden rounded-xl border border-white/[0.09] bg-[#212124] p-4.5 transition-all duration-200 hover:border-white/[0.20] hover:shadow-lg shadow-sm"
+            role={card.isClickable ? "button" : undefined}
+            tabIndex={card.isClickable ? 0 : undefined}
+            onClick={() => handleCardAction(card)}
+            onKeyDown={(e) => {
+              if (card.isClickable && (e.key === "Enter" || e.key === " ")) {
+                e.preventDefault();
+                handleCardAction(card);
+              }
+            }}
+            title={card.tooltip}
+            className={cn(
+              "group relative overflow-hidden rounded-xl border border-white/[0.09] bg-[#212124] p-4.5 transition-all duration-200 shadow-sm text-left select-none",
+              card.isClickable
+                ? "cursor-pointer hover:border-white/[0.25] hover:shadow-lg active:scale-[0.99] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400"
+                : "cursor-default"
+            )}
           >
             {/* Subtle top edge specular highlight tinted to card theme */}
             <div
@@ -120,3 +154,4 @@ export default function MetricsRibbon({ stats, isLoading = false }) {
     </div>
   );
 }
+

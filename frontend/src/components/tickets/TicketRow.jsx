@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import StatusBadge from "./StatusBadge";
-import { formatRelativeTime } from "@/lib/utils";
+import { formatRelativeTime, formatDateTime } from "@/lib/utils";
 
 /**
  * Single interactive row in the ticket queue table.
@@ -25,6 +25,8 @@ export default function TicketRow({ ticket }) {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+  const updatedAtTime = ticket.updated_at || ticket.created_at;
 
   return (
     <tr
@@ -65,10 +67,24 @@ export default function TicketRow({ ticket }) {
         <StatusBadge status={ticket.status} />
       </td>
 
-      {/* Relative Time */}
+      {/* Updated Relative Time with Exact on Hover & Directional Cue */}
       <td className="py-3 px-4 whitespace-nowrap text-right text-xs font-mono-id text-zinc-500">
-        {formatRelativeTime(ticket.created_at)}
+        <div className="inline-flex items-center justify-end gap-2">
+          <time
+            title={formatDateTime(updatedAtTime)}
+            className="group-hover:text-zinc-400 transition-colors"
+          >
+            {formatRelativeTime(updatedAtTime)}
+          </time>
+          <span
+            className="text-zinc-500 group-hover:text-zinc-200 transition-all transform group-hover:translate-x-0.5 opacity-0 group-hover:opacity-100 font-semibold text-sm leading-none select-none inline-block w-2 text-right"
+            aria-hidden="true"
+          >
+            ›
+          </span>
+        </div>
       </td>
     </tr>
   );
 }
+

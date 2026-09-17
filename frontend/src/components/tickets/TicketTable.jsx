@@ -1,20 +1,125 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import TicketRow from "./TicketRow";
 import { Button } from "@/components/ui/button";
 
 /**
- * Full ticket queue table with shimmer skeleton loading and empty state.
+ * Full ticket queue table with shimmer skeleton loading and contextual empty states.
  * Dense Vercel/OpenAI table styling layered over the workbench canvas.
  * @param {object} props
  * @param {Array<object>} props.tickets - List of ticket objects
  * @param {boolean} props.isLoading - Whether tickets are loading
  * @param {function(): void} [props.onResetFilters] - Handler to reset search and status filter
+ * @param {string} [props.statusFilter] - Active filter ("All" | "Open" | "In Progress" | "Closed")
+ * @param {string} [props.searchQuery] - Active search query
+ * @param {object} [props.stats] - Summary stats { total, open, inProgress, closed }
  */
 export default function TicketTable({
   tickets = [],
   isLoading = false,
   onResetFilters,
+  statusFilter = "All",
+  searchQuery = "",
+  stats,
 }) {
+  const getEmptyStateContent = () => {
+    const totalCount = stats?.total ?? 0;
+    const isSearchActive = Boolean(searchQuery && searchQuery.trim().length > 0);
+    const isFilterActive = statusFilter && statusFilter !== "All";
+
+    // Scenario 1: Zero tickets exist at all in the system
+    if (totalCount === 0 && !isSearchActive) {
+      return {
+        title: "No tickets yet",
+        description: "Customer issues will appear here.",
+        action: (
+          <Link
+            to="/tickets/new"
+            className="inline-flex items-center justify-center h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors cursor-pointer select-none shadow-sm mt-2"
+          >
+            Create Ticket
+          </Link>
+        ),
+      };
+    }
+
+    // Scenario 2: Search active and yielded zero results
+    if (isSearchActive) {
+      return {
+        title: "No tickets match search",
+        description: `No tickets match "${searchQuery.trim()}". Try a different search.`,
+        action: onResetFilters ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onResetFilters}
+            className="mt-2 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
+          >
+            Clear Search
+          </Button>
+        ) : null,
+      };
+    }
+
+    // Scenario 3: Filter is "Open" and zero open tickets exist
+    if (statusFilter === "Open") {
+      return {
+        title: "You're all caught up",
+        description: "No open tickets need attention.",
+        action: onResetFilters ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onResetFilters}
+            className="mt-2 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
+          >
+            View All Tickets
+          </Button>
+        ) : null,
+      };
+    }
+
+    // Scenario 4: Specific status filter active with no matching tickets
+    if (isFilterActive) {
+      return {
+        title: `No ${statusFilter.toLowerCase()} tickets`,
+        description: `No ${statusFilter.toLowerCase()} tickets need attention.`,
+        action: onResetFilters ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onResetFilters}
+            className="mt-2 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
+          >
+            View All Tickets
+          </Button>
+        ) : null,
+      };
+    }
+
+    // Fallback: General no-match criteria
+    return {
+      title: "No tickets match criteria",
+      description: "No customer tickets match your active filter or search query.",
+      action: onResetFilters ? (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onResetFilters}
+          className="mt-2 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
+        >
+          Reset Filters
+        </Button>
+      ) : null,
+    };
+  };
+
+  const emptyState = getEmptyStateContent();
+
   return (
     <div className="w-full overflow-hidden rounded-xl border border-white/[0.09] bg-[#212124] shadow-xl shadow-black/30">
       <div className="overflow-x-auto">
@@ -25,7 +130,7 @@ export default function TicketTable({
               <th scope="col" className="py-2.5 px-4 w-60">Customer</th>
               <th scope="col" className="py-2.5 px-4">Subject</th>
               <th scope="col" className="py-2.5 px-4 w-36">Status</th>
-              <th scope="col" className="py-2.5 px-4 w-28 text-right">Created</th>
+              <th scope="col" className="py-2.5 px-4 w-32 text-right">Updated</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/[0.06]">
@@ -61,7 +166,7 @@ export default function TicketTable({
                 <TicketRow key={ticket.ticket_id} ticket={ticket} />
               ))
             ) : (
-              // Empty State
+              // Context-Aware Empty State
               <tr>
                 <td colSpan={5} className="py-16 px-4 text-center">
                   <div className="flex flex-col items-center justify-center space-y-3 max-w-sm mx-auto">
@@ -81,22 +186,12 @@ export default function TicketTable({
                       </svg>
                     </div>
                     <h3 className="text-sm font-medium text-zinc-200">
-                      No tickets match criteria
+                      {emptyState.title}
                     </h3>
                     <p className="text-xs text-zinc-500 text-center">
-                      No customer tickets match your active filter or search query.
+                      {emptyState.description}
                     </p>
-                    {onResetFilters && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={onResetFilters}
-                        className="mt-2 border-zinc-700/80 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs cursor-pointer"
-                      >
-                        Reset Filters
-                      </Button>
-                    )}
+                    {emptyState.action}
                   </div>
                 </td>
               </tr>
@@ -107,3 +202,4 @@ export default function TicketTable({
     </div>
   );
 }
+

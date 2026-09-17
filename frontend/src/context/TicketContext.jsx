@@ -73,11 +73,19 @@ export function TicketProvider({ children }) {
     setError(null);
 
     try {
-      const [filteredData, overviewData] = await Promise.all([
-        ticketApi.getAll(statusFilter === "All" ? null : statusFilter, debouncedQuery),
-        // If we don't have overview yet or filter is changed, sync overview
-        ticketApi.getAll(null, "")
-      ]);
+      const isDefaultQueue = statusFilter === "All" && (!debouncedQuery || debouncedQuery.trim() === "");
+      let filteredData;
+      let overviewData;
+
+      if (isDefaultQueue) {
+        overviewData = await ticketApi.getAll(null, "");
+        filteredData = overviewData;
+      } else {
+        [filteredData, overviewData] = await Promise.all([
+          ticketApi.getAll(statusFilter === "All" ? null : statusFilter, debouncedQuery),
+          ticketApi.getAll(null, "")
+        ]);
+      }
 
       if (currentRequestId === requestIdRef.current) {
         setTickets(Array.isArray(filteredData) ? filteredData : []);

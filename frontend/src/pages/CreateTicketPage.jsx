@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BlurFade from "@/components/magicui/BlurFade";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  */
 export default function CreateTicketPage() {
   const navigate = useNavigate();
+  const nameInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -28,6 +29,11 @@ export default function CreateTicketPage() {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Autofocus Customer Name input when page opens
+  useEffect(() => {
+    nameInputRef.current?.focus();
+  }, []);
 
   const validateField = (field, value) => {
     switch (field) {
@@ -84,7 +90,7 @@ export default function CreateTicketPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
 
     // Mark all fields as touched and validate
     const validationErrors = {
@@ -128,6 +134,13 @@ export default function CreateTicketPage() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-4xl mx-auto">
       {/* Crisp Breadcrumb Navigation */}
@@ -163,7 +176,7 @@ export default function CreateTicketPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-5">
+          <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} noValidate className="space-y-5">
             {/* 2-Column Grid: Customer Name & Customer Email */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
@@ -174,6 +187,8 @@ export default function CreateTicketPage() {
                   Customer Name <span className="text-zinc-500">*</span>
                 </label>
                 <Input
+                  ref={nameInputRef}
+                  autoFocus
                   id="customer_name"
                   name="customer_name"
                   type="text"
@@ -293,7 +308,8 @@ export default function CreateTicketPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center justify-center h-8 px-4 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors select-none shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Create Ticket (⌘↵)"
+                className="inline-flex items-center justify-center gap-1.5 h-8 px-4 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors select-none shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <span className="inline-flex items-center gap-2">
@@ -304,7 +320,12 @@ export default function CreateTicketPage() {
                     Creating Ticket...
                   </span>
                 ) : (
-                  "Create Ticket"
+                  <>
+                    <span>Create Ticket</span>
+                    <kbd className="hidden sm:inline-block font-mono text-[10px] text-zinc-600 bg-zinc-200 px-1 py-0.5 rounded border border-zinc-300 select-none">
+                      ⌘↵
+                    </kbd>
+                  </>
                 )}
               </button>
             </div>
@@ -314,3 +335,4 @@ export default function CreateTicketPage() {
     </div>
   );
 }
+

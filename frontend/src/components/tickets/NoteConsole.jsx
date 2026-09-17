@@ -25,9 +25,18 @@ export default function NoteConsole({
   const isDisabled = isSubmitting || isTextEmpty;
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
     if (!isDisabled) {
       onAddNote();
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (!isDisabled) {
+        handleSubmit(e);
+      }
     }
   };
 
@@ -44,6 +53,7 @@ export default function NoteConsole({
           id="internal-note-input"
           value={noteText}
           onChange={(e) => onNoteChange(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Document investigation progress, customer communication, or resolution steps..."
           disabled={isSubmitting}
           rows={3}
@@ -78,16 +88,23 @@ export default function NoteConsole({
           <button
             type="submit"
             disabled={isDisabled}
-            className="inline-flex items-center justify-center h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none shadow-sm"
+            title="Submit note (⌘↵)"
+            className="inline-flex items-center justify-center gap-1.5 h-8 px-3.5 rounded-md bg-white hover:bg-zinc-200 text-black text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none shadow-sm"
           >
-            {isSubmitting
-              ? "Saving..."
-              : currentStatus === "Closed"
-              ? "Add Audit Note"
-              : "Add Note"}
+            <span>
+              {isSubmitting
+                ? "Saving..."
+                : currentStatus === "Closed"
+                ? "Add Audit Note"
+                : "Add Note"}
+            </span>
+            <kbd className="hidden sm:inline-block font-mono text-[10px] text-zinc-600 bg-zinc-200 px-1 py-0.5 rounded border border-zinc-300 select-none">
+              ⌘↵
+            </kbd>
           </button>
         </div>
       </div>
     </form>
   );
 }
+

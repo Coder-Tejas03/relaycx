@@ -42,7 +42,11 @@ export default function HomePage() {
 
       {/* 4 KPI Cards Ribbon */}
       <BlurFade delay={0.1}>
-        <MetricsRibbon stats={stats} isLoading={isLoading} />
+        <MetricsRibbon
+          stats={stats}
+          isLoading={isLoading}
+          onCardClick={setStatusFilter}
+        />
       </BlurFade>
 
       {/* Controls Bar: Search Bar + Status Filter + Reset Filters */}
@@ -58,6 +62,7 @@ export default function HomePage() {
             <StatusFilter
               activeFilter={statusFilter}
               onChange={setStatusFilter}
+              counts={stats}
             />
 
             {isFiltered && (
@@ -81,6 +86,9 @@ export default function HomePage() {
           tickets={tickets}
           isLoading={isLoading}
           onResetFilters={resetFilters}
+          statusFilter={statusFilter}
+          searchQuery={searchQuery}
+          stats={stats}
         />
       </BlurFade>
     </div>

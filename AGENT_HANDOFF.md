@@ -34,11 +34,12 @@
 |---|---|---|---|
 | 0 | Codebase Audit | ✅ COMPLETE | — |
 | 1 | Workflow Correctness | ✅ COMPLETE | Awaiting |
-| 2 | Core Queue UX | ⬜ NOT STARTED | Awaiting |
+| 2 | Core Queue UX | ✅ COMPLETE | Awaiting |
 | 3 | Ticket Detail Experience | ⬜ NOT STARTED | Awaiting |
 | 4 | Visual System Audit | ⬜ NOT STARTED | Awaiting |
 | 5 | Power User UX | ⬜ NOT STARTED | Awaiting |
 | 6 | Demo Readiness & QA | ⬜ NOT STARTED | Awaiting |
+
 
 ---
 
@@ -300,26 +301,40 @@ npm run build: ZERO ERRORS (Vite production build succeeded)
 
 ---
 
-## ⬜ Phase 2 — Core Queue UX
+## ✅ Phase 2 — Core Queue UX
 
-**Status:** NOT STARTED — awaiting user instruction to proceed
+**Status:** COMPLETE
 
-**Started:** —
-**Completed:** —
+**Started:** 2026-09-17
+**Completed:** 2026-09-17
 
 **Files changed:**
-_(to be filled in)_
+- `frontend/src/components/layout/Sidebar.jsx` — removed "Developer & System" section; renamed "All Queue" → "All Tickets"; added tooltip to Inbox; displayed live counts on Inbox (`stats.open`) and All Tickets (`stats.total`).
+- `frontend/src/components/tickets/StatusFilter.jsx` — added `counts` prop and live counts to filter pills: `All (N) | Open (N) | In Progress (N) | Closed (N)`.
+- `frontend/src/pages/HomePage.jsx` — passed `counts={stats}` to `StatusFilter`; wired `onCardClick={setStatusFilter}` on `MetricsRibbon`; passed filter and search context into `TicketTable`.
+- `frontend/src/components/tickets/MetricsRibbon.jsx` — made "Needs Attention", "Active Triage", and "Total Volume" KPI cards clickable with interactive hover/focus states; updated Resolution Rate subtitle format to `"X of Y resolved"`.
+- `frontend/src/components/tickets/TicketTable.jsx` — renamed table header column from "Created" to "Updated"; added contextual empty states for (1) zero tickets exist in system, (2) search with no matches, (3) zero open tickets ("You're all caught up"), and (4) specific status with zero tickets.
+- `frontend/src/components/tickets/TicketRow.jsx` — displayed `updated_at` relative time with exact time tooltip on hover; added hover directional cue (`›`).
+- `frontend/src/pages/TicketDetailPage.jsx` — made Ticket ID copyable with inline `✓` feedback in both primary card header and Audit Information panel (no toast); added unsaved note warning modal ("Leave without saving? [Stay] [Discard]") with `beforeunload` and link interception.
+- `frontend/src/pages/CreateTicketPage.jsx` — added autofocus on Customer Name input on mount; added `Ctrl/Cmd + Enter` shortcut to submit form; added `⌘↵` hint on submit button.
+- `frontend/src/components/tickets/NoteConsole.jsx` — added `Ctrl/Cmd + Enter` shortcut on note textarea; added `⌘↵` hint on submit button.
+- `frontend/src/services/api.js` — increased `DEFAULT_TIMEOUT_MS` from 5000ms to 15000ms to prevent premature timeout on initial Turso Cloud DB connection.
+- `frontend/src/context/TicketContext.jsx` — deduplicated queue fetch when `statusFilter === "All"` and search query is empty to reduce latency and eliminate duplicate queries.
 
 **Deviations from plan:**
-_(to be filled in)_
+- Increased `DEFAULT_TIMEOUT_MS` from 5000ms to 15000ms in `api.js` because remote Turso database cold TLS handshakes across regions take ~5.5s, which previously triggered false timeout aborts.
+- Deduplicated `ticketApi.getAll` in `TicketContext.jsx` when on default queue to prevent duplicate simultaneous database roundtrips.
 
 **Test results:**
 ```
-npm run build: [PENDING]
+npm run build: ZERO ERRORS (vite v8.3.0 building client environment for production)
+backend verification tests: ALL 9 TESTS PASSED CLEANLY
+Manual browser QA: 100% verified and confirmed working by user
 ```
 
 **Notes for next phase:**
-_(to be filled in)_
+- Phase 3 is Ticket Detail Experience: primary CTA per status ([Start Investigation], [Resolve Ticket], [Reopen Ticket]), explicit closed state UX, removing "Manual Override" label, and adding Activity + Resolution Time to audit panel.
+
 
 ---
 

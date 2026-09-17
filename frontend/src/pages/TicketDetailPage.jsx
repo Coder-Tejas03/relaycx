@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import BlurFade from "@/components/magicui/BlurFade";
 import StatusBadge from "@/components/tickets/StatusBadge";
 import NoteTimeline from "@/components/tickets/NoteTimeline";
@@ -65,7 +65,11 @@ function ActionErrorBanner({ error, onDismiss }) {
  */
 export default function TicketDetailPage() {
   const { id } = useParams();
-  const [copied, setCopied] = React.useState(false);
+  const navigate = useNavigate();
+  const [copiedEmail, setCopiedEmail] = React.useState(false);
+  const [copiedId, setCopiedId] = React.useState(false);
+  const [showUnsavedModal, setShowUnsavedModal] = React.useState(false);
+  const [pendingNavigation, setPendingNavigation] = React.useState(null);
 
   const {
     ticket,
@@ -81,14 +85,85 @@ export default function TicketDetailPage() {
     handleAddNoteAndResolve,
   } = useTicketDetail(id);
 
+  const hasUnsavedNotes = Boolean(noteText && noteText.trim().length > 0);
+
   const handleCopyEmail = () => {
     if (ticket?.customer_email) {
       navigator.clipboard.writeText(ticket.customer_email);
-      setCopied(true);
+      setCopiedEmail(true);
       toast.success("Customer email copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopiedEmail(false), 2000);
     }
   };
+
+  const handleCopyTicketId = () => {
+    if (ticket?.ticket_id) {
+      navigator.clipboard.writeText(ticket.ticket_id);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    }
+  };
+
+  const handleBreadcrumbClick = (e) => {
+    e.preventDefault();
+    if (hasUnsavedNotes) {
+      setPendingNavigation(() => () => {
+        setNoteText("");
+        navigate("/");
+      });
+      setShowUnsavedModal(true);
+    } else {
+      navigate("/");
+    }
+  };
+
+  // Intercept beforeunload and in-app navigation when unsaved notes exist
+  React.useEffect(() => {
+    if (!hasUnsavedNotes) return;
+
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    const handleDocumentClickCapture = (e) => {
+      if (e.target.closest("#unsaved-note-modal")) return;
+
+      const anchor = e.target.closest("a[href]");
+      if (anchor) {
+        const href = anchor.getAttribute("href");
+        if (href && (href.startsWith("/") || href.startsWith("#")) && href !== window.location.pathname) {
+          e.preventDefault();
+          e.stopPropagation();
+          setPendingNavigation(() => () => {
+            setNoteText("");
+            navigate(href);
+          });
+          setShowUnsavedModal(true);
+          return;
+        }
+      }
+
+      const asideButton = e.target.closest("aside button");
+      if (asideButton) {
+        e.preventDefault();
+        e.stopPropagation();
+        setPendingNavigation(() => () => {
+          setNoteText("");
+          asideButton.click();
+        });
+        setShowUnsavedModal(true);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("click", handleDocumentClickCapture, true);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("click", handleDocumentClickCapture, true);
+    };
+  }, [hasUnsavedNotes, navigate, setNoteText]);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
@@ -97,7 +172,8 @@ export default function TicketDetailPage() {
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
+            onClick={handleBreadcrumbClick}
+            className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors cursor-pointer"
           >
             <ArrowLeft size={13} />
             <span>Tickets</span>
@@ -159,9 +235,19 @@ export default function TicketDetailPage() {
 
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <span className="font-mono-id tracking-wider text-xs text-zinc-400 font-semibold">
-                      {ticket.ticket_id}
-                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopyTicketId}
+                      title="Click to copy Ticket ID"
+                      className="group inline-flex items-center gap-1.5 font-mono-id tracking-wider text-xs text-zinc-400 hover:text-zinc-200 font-semibold cursor-pointer transition-colors"
+                    >
+                      <span>{ticket.ticket_id}</span>
+                      {copiedId ? (
+                        <Check size={13} className="text-emerald-400" />
+                      ) : (
+                        <Copy size={13} className="text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                      )}
+                    </button>
                     <h1 className="mt-1 text-xl sm:text-2xl font-semibold tracking-tight text-white">
                       {ticket.subject}
                     </h1>
@@ -183,7 +269,7 @@ export default function TicketDetailPage() {
                     className="group inline-flex items-center gap-1.5 font-mono-id text-zinc-400 hover:text-white transition-colors cursor-pointer"
                   >
                     <span>{ticket.customer_email}</span>
-                    {copied ? (
+                    {copiedEmail ? (
                       <Check size={13} className="text-emerald-400" />
                     ) : (
                       <Copy size={13} className="text-zinc-500 group-hover:text-zinc-300 transition-colors" />
@@ -296,9 +382,19 @@ export default function TicketDetailPage() {
 
                 <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
                   <span className="text-zinc-500">Ticket ID</span>
-                  <span className="font-mono-id text-zinc-200">
-                    {ticket.ticket_id}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyTicketId}
+                    title="Click to copy Ticket ID"
+                    className="group inline-flex items-center gap-1.5 font-mono-id text-zinc-200 hover:text-white cursor-pointer transition-colors"
+                  >
+                    <span>{ticket.ticket_id}</span>
+                    {copiedId ? (
+                      <Check size={12} className="text-emerald-400" />
+                    ) : (
+                      <Copy size={12} className="text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                    )}
+                  </button>
                 </div>
 
                 <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
@@ -340,6 +436,63 @@ export default function TicketDetailPage() {
                 </div>
               </div>
             </BlurFade>
+          </div>
+        </div>
+      )}
+
+      {/* Unsaved Note Confirmation Dialog */}
+      {showUnsavedModal && (
+        <div
+          id="unsaved-note-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="unsaved-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+        >
+          <div className="relative w-full max-w-md rounded-xl border border-white/[0.12] bg-[#212124] p-5 sm:p-6 shadow-2xl space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="size-9 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+                <AlertCircle size={18} />
+              </div>
+              <div className="space-y-1 flex-1 min-w-0">
+                <h2 id="unsaved-modal-title" className="text-sm font-semibold text-white">
+                  Leave without saving?
+                </h2>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  You have an unsaved internal note in progress. If you leave now, your changes will be discarded.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-white/[0.08]">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowUnsavedModal(false);
+                  setPendingNavigation(null);
+                }}
+                className="h-8 px-3.5 rounded-md border border-zinc-700/80 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white text-xs font-medium transition-colors cursor-pointer"
+              >
+                Stay
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowUnsavedModal(false);
+                  const performNav = pendingNavigation;
+                  setPendingNavigation(null);
+                  if (performNav) {
+                    performNav();
+                  } else {
+                    setNoteText("");
+                    navigate("/");
+                  }
+                }}
+                className="h-8 px-3.5 rounded-md bg-red-600 hover:bg-red-500 text-white text-xs font-medium transition-colors cursor-pointer shadow-sm"
+              >
+                Discard
+              </button>
+            </div>
           </div>
         </div>
       )}

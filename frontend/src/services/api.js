@@ -1,7 +1,8 @@
 import { API_BASE_URL } from "@/constants";
 
 const BASE = `${API_BASE_URL}/api/tickets`;
-const DEFAULT_TIMEOUT_MS = 5000;
+const DEFAULT_TIMEOUT_MS = 15000;
+
 
 /**
  * Fetch wrapper with timeout and offline detection to prevent indefinite hangs.
