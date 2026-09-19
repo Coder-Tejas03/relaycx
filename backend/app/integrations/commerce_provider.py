@@ -50,7 +50,7 @@ ISSUE_RELEVANCE_RULES: dict[str, set[str]] = {
 #   notes                 : str  — internal ops note for the agent workbench
 #   technical_details     : dict — for developer/SaaS accounts (endpoint, quota, etc.)
 SEEDED_CUSTOMER_CONTEXTS: dict[tuple[str, str], dict] = {
-    ("Zen Botanics", "aditya.joshi@zenbotanics.com"): {
+    ("Zen Botanics", "aditya.joshi@gmail.com"): {
         "account_type": "ecommerce",
         "order_id": "ORD-ZB-10482",
         "order_date": "17 Sep 2026",
@@ -75,7 +75,30 @@ SEEDED_CUSTOMER_CONTEXTS: dict[tuple[str, str], dict] = {
             "no previous refund or replacement recorded."
         ),
     },
-    ("Aura D2C", "meera.iyer@aurad2c.com"): {
+    ("Zen Botanics", "pooja.sharma@gmail.com"): {
+        "account_type": "ecommerce",
+        "order_id": "ORD-ZB-11942",
+        "order_date": "18 Sep 2026",
+        "item_name": "Organic Facial Serum 30ml (Glass Dropper Edition)",
+        "total_amount": "₹1,499",
+        "payment_method": "Prepaid · UPI (Razorpay)",
+        "carrier": "Blue Dart Express",
+        "tracking_number": "BDE-849201-ZB",
+        "shipping_status": "Delivered",
+        "estimated_delivery": "Delivered today at 10:15 AM",
+        "customer_lifetime_value": "₹1,499 (1 order)",
+        "customer_tier": "New Customer",
+        "return_window_active": True,
+        "dispute_reason": (
+            "Customer reported that the glass dropper bottle arrived broken inside the parcel box. "
+            "Eligible for immediate priority replacement."
+        ),
+        "notes": (
+            "Order delivered via Blue Dart Express at 10:15 AM. Order is paid via UPI transaction RZP-ZB-829104. "
+            "First order for this customer."
+        ),
+    },
+    ("Aura D2C", "meera.iyer@gmail.com"): {
         "account_type": "ecommerce",
         "order_id": "ORD-AU-5837",
         "order_date": "19 Sep 2026",
@@ -101,7 +124,7 @@ SEEDED_CUSTOMER_CONTEXTS: dict[tuple[str, str], dict] = {
             "No courier or fulfillment record has been created yet."
         ),
     },
-    ("UrbanFit", "rohan.kapoor@urbanfit.in"): {
+    ("UrbanFit", "rohan.kapoor@gmail.com"): {
         "account_type": "ecommerce",
         "order_id": "ORD-UF-7316",
         "order_date": "16 Sep 2026",

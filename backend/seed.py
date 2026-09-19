@@ -71,7 +71,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-ZEN-ORD-0001",
                     customer_name="Aditya Joshi",
-                    customer_email="aditya.joshi@zenbotanics.com",
+                    customer_email="aditya.joshi@gmail.com",
                     subject="Organic facial serum bottle arrived leaking",
                     description=(
                         "My order was delivered today, but the Organic Facial Serum bottle "
@@ -117,7 +117,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-ZEN-ORD-0002",
                     customer_name="Aditya Joshi",
-                    customer_email="aditya.joshi@zenbotanics.com",
+                    customer_email="aditya.joshi@gmail.com",
                     subject="Expedited courier dispatch for replacement serum",
                     description=(
                         "Following up on ticket TKT-ZEN-ORD-0001 regarding the leaking bottle; "
@@ -156,7 +156,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-ZEN-PRD-0001",
                     customer_name="Aditya Joshi",
-                    customer_email="aditya.joshi@zenbotanics.com",
+                    customer_email="aditya.joshi@gmail.com",
                     subject="Product availability question",
                     description="Inquiring whether Organic Facial Serum 50ml will be restocked this quarter.",
                     status="Closed",
@@ -197,7 +197,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-ZEN-ACC-0001",
                     customer_name="Aditya Joshi",
-                    customer_email="aditya.joshi@zenbotanics.com",
+                    customer_email="aditya.joshi@gmail.com",
                     subject="Address update request",
                     description="Requested changing default delivery address prior to next renewal.",
                     status="Closed",
@@ -238,7 +238,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-AUR-PAY-0001",
                     customer_name="Meera Iyer",
-                    customer_email="meera.iyer@aurad2c.com",
+                    customer_email="meera.iyer@gmail.com",
                     subject="Payment deducted but order is still not confirmed",
                     description=(
                         "I placed an order for the Rose Glow Hydration Kit this morning. "
@@ -291,7 +291,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-AUR-PAY-0002",
                     customer_name="Meera Iyer",
-                    customer_email="meera.iyer@aurad2c.com",
+                    customer_email="meera.iyer@gmail.com",
                     subject="UPI double charge during checkout retry",
                     description=(
                         "While attempting to place an order for the Rose Glow Hydration Kit after "
@@ -337,7 +337,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-AUR-ORD-0001",
                     customer_name="Meera Iyer",
-                    customer_email="meera.iyer@aurad2c.com",
+                    customer_email="meera.iyer@gmail.com",
                     subject="Order delivery delay",
                     description="Customer inquiring about transit status for shipment delayed by local courier hub backlog.",
                     status="Closed",
@@ -384,7 +384,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-AUR-PRD-0001",
                     customer_name="Meera Iyer",
-                    customer_email="meera.iyer@aurad2c.com",
+                    customer_email="meera.iyer@gmail.com",
                     subject="Product availability question",
                     description="Customer asking for ingredient formulation details and availability of 30ml travel size.",
                     status="Closed",
@@ -425,7 +425,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-URB-ORD-0001",
                     customer_name="Rohan Kapoor",
-                    customer_email="rohan.kapoor@urbanfit.in",
+                    customer_email="rohan.kapoor@gmail.com",
                     subject="Received the wrong product in my UrbanFit order",
                     description=(
                         "My order was delivered today, but I received a pair of UrbanFit "
@@ -478,7 +478,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-URB-ORD-0002",
                     customer_name="Rohan Kapoor",
-                    customer_email="rohan.kapoor@urbanfit.in",
+                    customer_email="rohan.kapoor@gmail.com",
                     subject="Replacement joggers delivery rescheduled by courier",
                     description=(
                         "Following up on ticket TKT-URB-ORD-0001 regarding the incorrect item delivered. "
@@ -518,7 +518,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-URB-PRD-0001",
                     customer_name="Rohan Kapoor",
-                    customer_email="rohan.kapoor@urbanfit.in",
+                    customer_email="rohan.kapoor@gmail.com",
                     subject="Size exchange for previous order",
                     description="Customer requested exchanging size M joggers for size L from prior seasonal drop.",
                     status="Closed",
@@ -565,7 +565,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-URB-GEN-0001",
                     customer_name="Rohan Kapoor",
-                    customer_email="rohan.kapoor@urbanfit.in",
+                    customer_email="rohan.kapoor@gmail.com",
                     subject="Delivery status enquiry",
                     description="Customer inquiring about courier transit timeline during monsoon weather advisory.",
                     status="Closed",
@@ -606,7 +606,7 @@ def seed_database():
                 "ticket": Ticket(
                     ticket_id="TKT-URB-PRD-0002",
                     customer_name="Rohan Kapoor",
-                    customer_email="rohan.kapoor@urbanfit.in",
+                    customer_email="rohan.kapoor@gmail.com",
                     subject="Product availability question",
                     description="Customer inquiring about restock date for heavyweight hoodie drop.",
                     status="Closed",
