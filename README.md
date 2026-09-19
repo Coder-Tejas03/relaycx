@@ -4,48 +4,41 @@
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI_0.115+-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/Frontend-React_19_Vite-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![TailwindCSS](https://img.shields.io/badge/Styling-Tailwind_CSS_v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-RelayCX is an enterprise-grade customer support CRM engineered for high-volume modern e-commerce, D2C, and multi-tenant support operations. Built in response to the **Datastraw Technologies AI + Tech Intern Assessment**, it goes far beyond a bare-bones ticketing CRUD by unifying core ticket lifecycle management with **multi-client brand isolation**, **omnichannel intake attribution**, **queue pagination**, and **real-time customer commerce intelligence**—giving support agents instant operational clarity without external tab context-switching.
+RelayCX is an enterprise-grade customer support CRM engineered for high-volume modern e-commerce, D2C, and multi-tenant support operations. It bridges inbound customer inquiries with high-velocity agent workflows by unifying core ticket lifecycle management with **multi-client brand isolation**, **omnichannel intake attribution**, **smooth-animated queue pagination**, and **real-time customer commerce intelligence**—giving support agents instant operational clarity without external tab context-switching.
 
 ---
 
 ## 🌐 Deployments & Quick Access
 
 * **Live Application:** [https://relaycx-eight.vercel.app/](https://relaycx-eight.vercel.app/)
-* **Interactive OpenAPI / Swagger Documentation:** `http://localhost:8000/docs` (local) or on the deployed backend `/docs`.
+* **Interactive OpenAPI / Swagger Documentation:** Available locally at `http://localhost:8000/docs` or on the deployed backend URL at `/docs`.
 * **Demo Video Walkthrough:** `[Insert Demo Video Link Here]`
-* **Assessment Organization:** Datastraw Technologies (`talent@datastraw.in`)
 
 ---
 
-## 📋 Datastraw Assessment Specification & Compliance
+## 📋 Operational Capabilities Matrix
 
-This project was built to satisfy and exceed the **Datastraw Technologies Assessment Test** specifications.
-
-### 1. Core Requirements Matrix
-
-| Assessment Requirement | Spec Details | RelayCX Implementation & Status |
+| Operational Domain | Capability Details | RelayCX Architecture & Implementation |
 | :--- | :--- | :--- |
-| **1. Create Tickets** | Customer name, email, subject, description, auto ID & timestamp | ✅ Structured schema validation (Pydantic v2), collision-resistant deterministic IDs (`TKT-URB-ORD-0001`), client brand & channel tagging. |
-| **2. List All Tickets** | Clean list view displaying ID, Name, Title, Status, and Date | ✅ High-density operational queue table with monospace IDs, customer avatar pills, relative timestamps, and responsive layouts. |
-| **3. Search Functionality** | Quick search across names, IDs, emails, and descriptions | ✅ Real-time, 200ms debounced multi-field substring search across all five key fields in both SQLite and client cache. |
-| **4. Filter by Status** | Filter by: `Open`, `In Progress`, `Closed` | ✅ Dedicated status filtering tabs with live count badges synchronized to real-time database state and clickable KPI cards. |
-| **5. View & Update Tickets** | Detailed view for each ticket, update status, add notes/comments | ✅ Full ticket workbench with chronological audit timeline, auto-advancing state machine (`Open` $\rightarrow$ `In Progress`), and note attachments. |
+| **Ticket Lifecycle & Sequencing** | Inbound intake, deterministic sequence IDs, metadata tracking | Strict Pydantic v2 schemas, collision-resistant IDs (`TKT-URB-ORD-0001`), client brand & channel tagging, and automated weighted keyword taxonomy (`ORD`, `PAY`, `ACC`, `TEC`, `PRD`, `GEN`). |
+| **High-Density Queue & Pagination** | Fast list view, page shifting, performance scaling | Restricts active DOM view to 10 records per page with smooth `motion/react` page animations, responsive counter (`Showing 1–10 of 12`), safe clamping, and filter-reset safety. |
+| **Multi-Field Instant Search** | Quick lookup across names, IDs, emails, and subjects | Real-time, 200ms debounced case-insensitive multi-field search across five core fields in both SQLite and client cache. |
+| **Status Distribution & Triage** | Filtering by `Open`, `In Progress`, `Closed` | Dynamic status tabs with live count pills synchronized to real-time database state and clickable KPI cards (`Total Volume`, `Needs Attention`, `Active Triage`, `Resolution Rate`). |
+| **Workbench & Audit Timeline** | Detailed triage workspace, status updates, internal notes | Full ticket workbench with chronological audit timeline, auto-advancing state machine (`Open` $\rightarrow$ `In Progress`), and structured event tagging (`TICKET_CREATED`, `STATUS_CHANGE`, `NOTE_ADDED`). |
 
-### 2. Standout Innovations ("Beyond Bare-Bones CRM")
+---
 
-The assessment specifically prompts:
-> *"What would make this genuinely useful for a real support team handling hundreds of tickets a day, across multiple channels, for multiple clients? What's missing from a bare-bones CRM that a real team would actually need?"*
+## 🚀 Advanced Architecture & Enterprise Capabilities
 
-RelayCX addresses this with five purpose-built enterprise capabilities:
+RelayCX was designed from the ground up to solve the real-world friction of support teams handling hundreds of inquiries daily across diverse channels and multiple brand portfolios:
 
 1. **Multi-Client Brand Scoping & Isolation (`client_brand`):**
-   Real support agencies and BPOs manage multiple client brands simultaneously (e.g., *UrbanFit*, *Zen Botanics*, *Aura D2C*, *CasaNest*, *GlowTheory*). RelayCX provides brand-isolated customer history and brand-partitioned ticket numbering.
+   Real support agencies and multi-brand conglomerates manage multiple client brands simultaneously (e.g., *UrbanFit*, *Zen Botanics*, *Aura D2C*, *CasaNest*, *GlowTheory*). RelayCX enforces brand-isolated customer ticket histories and brand-partitioned sequence counters.
 2. **Omnichannel Intake Attribution (`channel`):**
-   Tracks whether inbound tickets originated via **Email**, **WhatsApp**, **Web Portal**, or **Instagram**, rendering dedicated channel badges and filtering hooks.
+   Tracks whether inbound customer inquiries originated via **Email**, **WhatsApp**, **Web Portal**, or **Instagram**, rendering dedicated channel badges and filtering hooks.
 3. **Real-Time Commerce Intelligence (`CommerceProvider`):**
-   Support agents spend up to 40% of their triage time alt-tabbing into Shopify, Stripe, or carrier portals. RelayCX automatically injects live order details, carrier tracking links, return window status, dispute reasons, and customer lifetime value (LTV) right next to the ticket.
+   Support agents spend up to 40% of their triage time alt-tabbing into Shopify, Stripe, or shipping portals. RelayCX automatically injects live order details, carrier tracking links, return window status, dispute reasons, and customer lifetime value (LTV) right next to the ticket.
 4. **Queue Table Pagination (10 Records / Page):**
    Restricts the active DOM view to 10 records per page with smooth `motion/react` page transition animations, smart windowing, safe clamping, and filter-reset safety, eliminating table lag as queues scale to hundreds of records.
 5. **High-Velocity Keyboard Ergonomics (`Cmd + K` Command Palette):**
@@ -56,8 +49,8 @@ RelayCX addresses this with five purpose-built enterprise capabilities:
 ## ⚡ Key Architecture & Features
 
 * **Deterministic Collision-Resistant Ticket IDs:** Formatted as `TKT-{CLIENT3}-{ISSUE3}-{SEQ4}` (e.g., `TKT-URB-ORD-0001`) with automated weighted keyword classification (`ORD`, `PAY`, `ACC`, `TEC`, `PRD`, `GEN`) and database-enforced unique constraints.
-* **Auto-Advancing State Machine:** Appending an operational note to an `Open` ticket automatically transitions its lifecycle status to `In Progress`, reducing manual clicks.
-* **Customer Audit History:** Cross-ticket brand-scoped audit drawer showing all prior inquiries from the same customer under that specific client brand.
+* **Auto-Advancing State Machine:** Appending an operational note to an `Open` ticket automatically transitions its lifecycle status to `In Progress`, eliminating repetitive manual clicks.
+* **Customer Audit History:** Cross-ticket brand-scoped audit drawer displaying prior inquiries from the customer under that specific client brand.
 * **Smooth Motion System:** Fluid transitions, shimmer loading skeletons, and subtle micro-interactions built with `motion/react` and Tailwind CSS v4 design tokens.
 * **Resilient Networking:** Custom fetch wrapper with timeout abort controllers (`AbortController`) and browser offline state detection (`navigator.onLine`).
 
@@ -332,7 +325,7 @@ Run from the `backend/` directory:
 # 1. Run unit regression tests
 python -m unittest tests/test_existing_routes_regression.py
 
-# 2. Run Phase 1 & Phase 2 verification suites (all 9 core criteria)
+# 2. Run Phase 1 & Phase 2 verification suites
 python tests/verify_phase1.py
 python tests/verify_phase2.py
 
@@ -406,18 +399,16 @@ relaycx/
 │   │   └── index.css                   # Tailwind v4 theme, depth tokens, & motion durations
 │   ├── package.json
 │   └── vite.config.js
-├── docs/                               # Assessment specification PDF & documentation
+├── docs/                               # Architecture & system documentation
 ├── verify_e2e.py                       # Root-level live E2E verification runner
 └── render.yaml                         # Deployment configuration
 ```
 
 ---
 
-## ✉️ Submission Information
+## 👤 Author & Maintainer
 
-* **Candidate:** Tejas Gosavi
-* **Evaluation Team:** `ozair.shaikh@datastraw.in`, `aryan.jaiswal@datastraw.in`
-* **CC:** `talent@datastraw.in`
-* **Application URL:** [https://relaycx-eight.vercel.app/](https://relaycx-eight.vercel.app/)
-* **Repository:** [https://github.com/coder-tejas03/relaycx](https://github.com/coder-tejas03/relaycx)
-* **License:** MIT License — see [LICENSE](LICENSE) for details.
+* **Developer:** Tejas Gosavi
+* **GitHub:** [@Coder-Tejas03](https://github.com/Coder-Tejas03)
+* **Live Demo:** [https://relaycx-eight.vercel.app/](https://relaycx-eight.vercel.app/)
+* **Repository:** [https://github.com/Coder-Tejas03/relaycx](https://github.com/Coder-Tejas03/relaycx)
