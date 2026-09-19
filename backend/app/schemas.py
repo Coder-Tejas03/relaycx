@@ -139,6 +139,17 @@ class TicketUpdateRequest(BaseModel):
     status: Optional[TicketStatus] = Field(None, description="Optional target status")
     note_text: Optional[str] = Field(None, description="Optional note text to append")
 
+    @field_validator("note_text", mode="before")
+    @classmethod
+    def accept_notes_alias(cls, v, info):
+        return v
+
+    @classmethod
+    def model_validate(cls, obj, *args, **kwargs):
+        if isinstance(obj, dict) and "notes" in obj and "note_text" not in obj:
+            obj = {**obj, "note_text": obj["notes"]}
+        return super().model_validate(obj, *args, **kwargs)
+
 
 class TicketUpdatedResponse(BaseModel):
     """Response returned upon updating ticket status or adding a note."""
@@ -146,6 +157,7 @@ class TicketUpdatedResponse(BaseModel):
     status: str
     updated_at: UtcDateTime
     note: Optional[NoteResponse] = None
+    success: bool = True
 
     model_config = ConfigDict(from_attributes=True)
 
