@@ -111,6 +111,45 @@ def seed_database():
             },
 
             # -----------------------------------------------------------------------
+            # FOLLOW-UP TICKET: Aditya Joshi | Expedited Replacement | Zen Botanics
+            # -----------------------------------------------------------------------
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-ZEN-ORD-0002",
+                    customer_name="Aditya Joshi",
+                    customer_email="aditya.joshi@zenbotanics.com",
+                    subject="Expedited courier dispatch for replacement serum",
+                    description=(
+                        "Following up on ticket TKT-ZEN-ORD-0001 regarding the leaking bottle; "
+                        "could you please dispatch the replacement bottle via priority air express? "
+                        "I have an upcoming travel schedule next week and need the replacement delivered promptly."
+                    ),
+                    status="Open",
+                    client_brand="Zen Botanics",
+                    channel="WhatsApp",
+                    intake_issue_type="ORD",
+                    issue_type="ORD",
+                    ticket_sequence=2,
+                    created_at=now - timedelta(minutes=20),
+                    updated_at=now - timedelta(minutes=20),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-ZEN-ORD-0002",
+                        note_text="Ticket intake created via WhatsApp.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(minutes=20),
+                    ),
+                    Note(
+                        ticket_id="TKT-ZEN-ORD-0002",
+                        note_text="Customer requested priority courier dispatch for the approved replacement.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(minutes=10),
+                    ),
+                ],
+            },
+
+            # -----------------------------------------------------------------------
             # PRIOR HISTORY TICKET 1: Aditya Joshi (4 months ago, Closed)
             # -----------------------------------------------------------------------
             {
@@ -241,6 +280,52 @@ def seed_database():
                         note_text="Payment transaction found, but order confirmation was not completed.",
                         event_type="NOTE_ADDED",
                         created_at=now - timedelta(minutes=20),
+                    ),
+                ],
+            },
+
+            # -----------------------------------------------------------------------
+            # FOLLOW-UP TICKET: Meera Iyer | Duplicate UPI Charge | Aura D2C
+            # -----------------------------------------------------------------------
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-AUR-PAY-0002",
+                    customer_name="Meera Iyer",
+                    customer_email="meera.iyer@aurad2c.com",
+                    subject="UPI double charge during checkout retry",
+                    description=(
+                        "While attempting to place an order for the Rose Glow Hydration Kit after "
+                        "a checkout timeout error, a second UPI deduction of ₹1,899 occurred under "
+                        "transaction UPI-984210. Both debits reflect on my bank statement. Please "
+                        "verify the double capture and process an immediate refund for the duplicate charge."
+                    ),
+                    status="In Progress",
+                    client_brand="Aura D2C",
+                    channel="WhatsApp",
+                    intake_issue_type="PAY",
+                    issue_type="PAY",
+                    ticket_sequence=2,
+                    created_at=now - timedelta(minutes=50),
+                    updated_at=now - timedelta(minutes=25),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-AUR-PAY-0002",
+                        note_text="Ticket intake created via WhatsApp.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(minutes=50),
+                    ),
+                    Note(
+                        ticket_id="TKT-AUR-PAY-0002",
+                        note_text="Open → In Progress",
+                        event_type="STATUS_CHANGE",
+                        created_at=now - timedelta(minutes=35),
+                    ),
+                    Note(
+                        ticket_id="TKT-AUR-PAY-0002",
+                        note_text="Duplicate UPI transaction ID confirmed with merchant payment gateway.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(minutes=25),
                     ),
                 ],
             },
@@ -382,6 +467,46 @@ def seed_database():
                         note_text="Fulfillment discrepancy identified; replacement requested.",
                         event_type="NOTE_ADDED",
                         created_at=now - timedelta(minutes=40),
+                    ),
+                ],
+            },
+
+            # -----------------------------------------------------------------------
+            # FOLLOW-UP TICKET: Rohan Kapoor | Replacement Shipment Tracking | UrbanFit
+            # -----------------------------------------------------------------------
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-URB-ORD-0002",
+                    customer_name="Rohan Kapoor",
+                    customer_email="rohan.kapoor@urbanfit.in",
+                    subject="Replacement joggers delivery rescheduled by courier",
+                    description=(
+                        "Following up on ticket TKT-URB-ORD-0001 regarding the incorrect item delivered. "
+                        "I received an automated SMS from the courier saying the replacement shipment "
+                        "was rescheduled due to address verification. Please confirm that the delivery "
+                        "address matches my profile and dispatch without further delay."
+                    ),
+                    status="Open",
+                    client_brand="UrbanFit",
+                    channel="Email",
+                    intake_issue_type="ORD",
+                    issue_type="ORD",
+                    ticket_sequence=2,
+                    created_at=now - timedelta(minutes=35),
+                    updated_at=now - timedelta(minutes=35),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-URB-ORD-0002",
+                        note_text="Ticket intake created via email support channel.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(minutes=35),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-ORD-0002",
+                        note_text="Delivery address re-verified with customer shipping profile.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(minutes=20),
                     ),
                 ],
             },
@@ -564,6 +689,45 @@ def seed_database():
                         note_text="Customer requested an updated delivery estimate.",
                         event_type="NOTE_ADDED",
                         created_at=now - timedelta(minutes=50),
+                    ),
+                ],
+            },
+
+            # -----------------------------------------------------------------------
+            # FOLLOW-UP TICKET: Arjun Mehta | Warranty Lid Replacement | CasaNest
+            # -----------------------------------------------------------------------
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-CAS-ORD-0002",
+                    customer_name="Arjun Mehta",
+                    customer_email="arjun.mehta@gmail.com",
+                    subject="Cookware lid replacement request for previous order",
+                    description=(
+                        "The glass lid for the ceramic sauté pan from my previous CasaNest "
+                        "cookware set arrived with a small hairline crack near the rim. Could "
+                        "you send a replacement lid under the manufacturer warranty?"
+                    ),
+                    status="Open",
+                    client_brand="CasaNest",
+                    channel="Web Portal",
+                    intake_issue_type="ORD",
+                    issue_type="ORD",
+                    ticket_sequence=2,
+                    created_at=now - timedelta(hours=1, minutes=15),
+                    updated_at=now - timedelta(minutes=45),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-CAS-ORD-0002",
+                        note_text="Ticket intake created via web portal.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(hours=1, minutes=15),
+                    ),
+                    Note(
+                        ticket_id="TKT-CAS-ORD-0002",
+                        note_text="Customer uploaded warranty invoice and photo of cracked lid.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(minutes=45),
                     ),
                 ],
             },

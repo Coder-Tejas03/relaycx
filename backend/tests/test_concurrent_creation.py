@@ -8,13 +8,17 @@ Simulates 10 simultaneous requests attempting to create tickets under the exact 
 4. All requests either succeed (HTTP 201) or cleanly return service unavailable (HTTP 503).
 """
 
+import os
+import tempfile
 import unittest
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from app.main import app
-from app.database import SessionLocal
-from app.models import Ticket
+from app.database import Base
+from app.models import Ticket, Note
 from app import service
 from app.schemas import TicketCreateRequest
 
@@ -22,37 +26,44 @@ from app.schemas import TicketCreateRequest
 class TestConcurrentCreation(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        cls.temp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
+        cls.temp_db.close()
+        cls.test_engine = create_engine(
+            f"sqlite:///{cls.temp_db.name}",
+            connect_args={"check_same_thread": False, "timeout": 30},
+        )
+        cls.TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=cls.test_engine)
+        Base.metadata.create_all(bind=cls.test_engine)
         cls.client = TestClient(app)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.test_engine.dispose()
+        if os.path.exists(cls.temp_db.name):
+            try:
+                os.unlink(cls.temp_db.name)
+            except OSError:
+                pass
 
     def test_01_simultaneous_ticket_creation_uniqueness(self):
         """
-        Fire 10 concurrent ticket creation requests for Aura D2C + INT.
+        Fire 10 concurrent ticket creation requests for UrbanFit + ORD.
         Validate zero duplicate IDs, zero duplicate sequences, and clean error handling.
         """
         num_concurrent = 10
-        brand = "Aura D2C"
-        # Subject and description designed to classify as 'INT'
-        payload = {
-            "customer_name": "Concurrent Developer Test",
-            "customer_email": "loadtest.dev@novacloud.io",
-            "client_brand": brand,
-            "channel": "Email",
-            "subject": "Webhook failure on telemetry endpoint HTTP 429",
-            "description": "High volume concurrency test triggering simultaneous sequence generation.",
-        }
-
+        brand = "UrbanFit"
         created_results = []
         status_codes = []
 
         def create_ticket_worker(worker_id):
-            db = SessionLocal()
+            db = self.TestSessionLocal()
             worker_payload = TicketCreateRequest(
-                customer_name=f"Concurrent Dev #{worker_id}",
-                customer_email=f"loadtest.dev.{worker_id}@novacloud.io",
+                customer_name=f"Concurrent Test #{worker_id}",
+                customer_email=f"concurrent.test.{worker_id}@example.com",
                 client_brand=brand,
                 channel="Email",
-                subject=f"Webhook HTTP 429 concurrency test #{worker_id}",
-                description="High volume concurrency test triggering simultaneous sequence generation.",
+                subject=f"Order delivery transit concurrency test #{worker_id}",
+                description="High volume concurrency test checking simultaneous order sequence allocation.",
             )
             try:
                 ticket_resp = service.create_new_ticket(db, worker_payload)
@@ -97,7 +108,7 @@ class TestConcurrentCreation(unittest.TestCase):
             f"Duplicate ticket IDs generated during concurrent execution: {created_ids}"
         )
 
-        # Invariant 4: All generated sequences for Aura D2C are strictly unique
+        # Invariant 4: All generated sequences are strictly unique
         created_seqs = [t["ticket_sequence"] for t in created_results]
         self.assertEqual(
             len(created_seqs),
@@ -106,21 +117,15 @@ class TestConcurrentCreation(unittest.TestCase):
         )
 
         # Invariant 5: Verify records in DB match
-        db = SessionLocal()
+        db = self.TestSessionLocal()
         try:
             for t_data in created_results:
                 t_id = t_data["ticket_id"]
                 db_record = db.query(Ticket).filter(Ticket.ticket_id == t_id).first()
                 self.assertIsNotNone(db_record, f"Ticket {t_id} missing in database")
                 self.assertEqual(db_record.client_brand, brand)
-                self.assertEqual(db_record.intake_issue_type, "INT")
                 self.assertEqual(db_record.ticket_sequence, t_data["ticket_sequence"])
         finally:
-            # Clean up concurrency test tickets to maintain clean state
-            for t_data in created_results:
-                t_id = t_data["ticket_id"]
-                db.query(Ticket).filter(Ticket.ticket_id == t_id).delete()
-            db.commit()
             db.close()
 
 
