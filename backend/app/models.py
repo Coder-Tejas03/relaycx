@@ -4,7 +4,7 @@ Implements the relational schema with cascading delete and indexing.
 """
 
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -19,6 +19,9 @@ class Ticket(Base):
     Ticket table representing customer inquiries and support cases.
     """
     __tablename__ = "tickets"
+    __table_args__ = (
+        UniqueConstraint("client_brand", "intake_issue_type", "ticket_sequence", name="uq_client_intake_sequence"),
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     ticket_id = Column(String(32), unique=True, index=True, nullable=False)
@@ -27,6 +30,11 @@ class Ticket(Base):
     subject = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
     status = Column(String(50), index=True, nullable=False, default="Open")
+    client_brand = Column(String(100), nullable=True, default="UrbanFit")
+    channel = Column(String(50), nullable=True, default="Email")
+    intake_issue_type = Column(String(10), nullable=True, default="GEN")
+    issue_type = Column(String(10), nullable=True, default="GEN")
+    ticket_sequence = Column(Integer, nullable=True)
     created_at = Column(DateTime, nullable=False, default=utc_now)
     updated_at = Column(DateTime, nullable=False, default=utc_now, onupdate=utc_now)
 

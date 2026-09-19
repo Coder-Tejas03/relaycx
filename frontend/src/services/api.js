@@ -169,4 +169,130 @@ export const ticketApi = {
 
     return response.json();
   },
+
+  /**
+   * Fetch prior tickets for a customer under a specific client brand.
+   * @param {string} clientBrand - Client brand name e.g. "UrbanFit"
+   * @param {string} customerEmail - Customer email address
+   * @param {string|null} [excludeTicketId] - Optional current ticket ID to omit
+   * @returns {Promise<Array<object>>} List of CustomerHistorySummary objects
+   */
+  getCustomerHistory: async (clientBrand, customerEmail, excludeTicketId = null) => {
+    if (!clientBrand || !customerEmail) return [];
+    const params = new URLSearchParams();
+    params.append("client_brand", clientBrand);
+    params.append("customer_email", customerEmail);
+    if (excludeTicketId) {
+      params.append("exclude_ticket_id", excludeTicketId);
+    }
+
+    const url = `${BASE}/customer-history?${params.toString()}`;
+    const response = await fetchWithTimeout(url, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      const errorMsg = await parseApiError(
+        response,
+        `Failed to fetch customer history (${response.status})`
+      );
+      throw new Error(errorMsg);
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Correct the current classification issue_type of a ticket.
+   * Note: ticket_id and intake_issue_type remain strictly immutable.
+   * @param {string} ticketId - Business ID e.g. "TKT-URB-INT-0001"
+   * @param {string} issueType - Taxonomy family code e.g. "ORD", "PAY", "ACC", etc.
+   * @returns {Promise<object>} IssueTypeCorrectedResponse { ticket_id, issue_type, intake_issue_type, updated_at }
+   */
+  updateIssueType: async (ticketId, issueType) => {
+    const response = await fetchWithTimeout(`${BASE}/${encodeURIComponent(ticketId)}/issue-type`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ issue_type: issueType }),
+    });
+
+    if (!response.ok) {
+      const errorMsg = await parseApiError(
+        response,
+        `Failed to update ticket classification (${response.status})`
+      );
+      throw new Error(errorMsg);
+    }
+
+    return response.json();
+  },
+};
+
+/**
+ * Service encapsulating customer operations and e-commerce context APIs.
+ */
+export const customerApi = {
+  /**
+   * Fetch client-scoped and issue-relevant context for a customer.
+   * @param {string} clientBrand - Client brand name
+   * @param {string} customerEmail - Customer email address
+   * @param {string|null} [issueType] - Current classification issue type (e.g. "ORD", "ANA")
+   * @returns {Promise<object|null>} Context object or null if 204 No Content
+   */
+  getRelevantContext: async (clientBrand, customerEmail, issueType = null) => {
+    if (!clientBrand || !customerEmail) return null;
+    const params = new URLSearchParams();
+    if (issueType) {
+      params.append("issue_type", issueType);
+    }
+    const query = params.toString() ? `?${params.toString()}` : "";
+    const url = `${API_BASE_URL}/api/customers/${encodeURIComponent(clientBrand)}/${encodeURIComponent(customerEmail)}/context${query}`;
+    const response = await fetchWithTimeout(url, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (response.status === 204) {
+      return null;
+    }
+
+    if (!response.ok) {
+      const errorMsg = await parseApiError(
+        response,
+        `Failed to fetch relevant customer context (${response.status})`
+      );
+      throw new Error(errorMsg);
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Fetch active commerce or SaaS operational context for a customer email (legacy backward-compat).
+   * @param {string} customerEmail - Customer email address
+   * @returns {Promise<object|null>} Order context object, or null if no records found (HTTP 204)
+   */
+  getOrderContext: async (customerEmail) => {
+    if (!customerEmail) return null;
+    const url = `${API_BASE_URL}/api/customers/${encodeURIComponent(customerEmail)}/order-context`;
+    const response = await fetchWithTimeout(url, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (response.status === 204) {
+      return null;
+    }
+
+    if (!response.ok) {
+      const errorMsg = await parseApiError(
+        response,
+        `Failed to fetch customer order context (${response.status})`
+      );
+      throw new Error(errorMsg);
+    }
+
+    return response.json();
+  },
 };

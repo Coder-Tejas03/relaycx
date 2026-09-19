@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base, ensure_schema
-from app import routes
+from app import routes, routes_commerce
 
 
 @asynccontextmanager
@@ -45,6 +45,7 @@ app.add_middleware(
 
 # Register API routes
 app.include_router(routes.router)
+app.include_router(routes_commerce.router)
 
 
 @app.get("/", tags=["Health Check"], summary="Root Health Check")

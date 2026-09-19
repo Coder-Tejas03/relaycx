@@ -4,9 +4,12 @@ import BlurFade from "@/components/magicui/BlurFade";
 import StatusBadge from "@/components/tickets/StatusBadge";
 import NoteTimeline from "@/components/tickets/NoteTimeline";
 import NoteConsole from "@/components/tickets/NoteConsole";
+import CommerceContextCard from "@/components/tickets/CommerceContextCard";
+import CustomerHistoryPanel from "@/components/tickets/CustomerHistoryPanel";
+import CustomSelect from "@/components/ui/CustomSelect";
 import { useTicketDetail } from "@/hooks/useTicketDetail";
 import { formatRelativeTime, formatDateTime, formatDuration, cn } from "@/lib/utils";
-import { TICKET_STATUSES } from "@/constants";
+import { TICKET_STATUSES, ISSUE_TAXONOMY } from "@/constants";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -18,6 +21,10 @@ import {
   CheckCircle2,
   RotateCcw,
   Loader2,
+  Mail,
+  MessageCircle,
+  Globe,
+  Camera,
 } from "lucide-react";
 
 
@@ -94,6 +101,7 @@ export default function TicketDetailPage() {
     handleStatusChange,
     handleAddNote,
     handleAddNoteAndResolve,
+    handleIssueTypeChange,
   } = useTicketDetail(id);
 
   const hasUnsavedNotes = Boolean(noteText && noteText.trim().length > 0);
@@ -462,8 +470,27 @@ export default function TicketDetailPage() {
               </div>
             </BlurFade>
 
-            {/* Vercel Segmented Status Switcher */}
+            {/* Relevant Operational Context Card (Client-Scoped & Issue-Relevant) */}
+            <BlurFade delay={0.14}>
+              <CommerceContextCard
+                customerEmail={ticket.customer_email}
+                customerName={ticket.customer_name}
+                clientBrand={ticket.client_brand}
+                issueType={ticket.issue_type}
+              />
+            </BlurFade>
+
+            {/* Customer History Panel (Collapsible, Client-Isolated) */}
             <BlurFade delay={0.15}>
+              <CustomerHistoryPanel
+                clientBrand={ticket.client_brand}
+                customerEmail={ticket.customer_email}
+                currentTicketId={ticket.ticket_id}
+              />
+            </BlurFade>
+
+            {/* Vercel Segmented Status Switcher */}
+            <BlurFade delay={0.16}>
               <div className="rounded-xl border border-white/[0.09] bg-[#212124] p-5 shadow-xl space-y-3.5">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-mono font-medium uppercase tracking-wider text-zinc-400">
@@ -553,6 +580,84 @@ export default function TicketDetailPage() {
                     )}
                   </button>
                 </div>
+
+                {ticket.client_brand && (
+                  <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
+                    <span className="text-zinc-500">Client Brand</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-zinc-800 border border-zinc-700/80 text-zinc-200">
+                      {ticket.client_brand}
+                    </span>
+                  </div>
+                )}
+
+                {ticket.channel && (
+                  <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
+                    <span className="text-zinc-500">Inbound Channel</span>
+                    <span className="inline-flex items-center gap-1.5 text-zinc-300 font-medium text-[11px]">
+                      {ticket.channel.toLowerCase().includes("whatsapp") ? (
+                        <MessageCircle size={12} className="text-emerald-400" />
+                      ) : ticket.channel.toLowerCase().includes("web") ? (
+                        <Globe size={12} className="text-purple-400" />
+                      ) : ticket.channel.toLowerCase().includes("insta") ? (
+                        <Camera size={12} className="text-pink-400" />
+                      ) : (
+                        <Mail size={12} className="text-blue-400" />
+                      )}
+                      <span>{ticket.channel}</span>
+                    </span>
+                  </div>
+                )}
+
+                {/* Taxonomy Classification & Issue Correction */}
+                {(ticket.intake_issue_type || "GEN") !== (ticket.issue_type || "GEN") ? (
+                  <>
+                    <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
+                      <span className="text-zinc-500">Intake Classification</span>
+                      <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700/60 font-medium">
+                        {ticket.intake_issue_type || "GEN"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60 gap-2">
+                      <span className="text-zinc-500 shrink-0">Current Classification</span>
+                      <div className="w-48">
+                        <CustomSelect
+                          id="current-classification-select"
+                          options={ISSUE_TAXONOMY}
+                          value={ticket.issue_type || "GEN"}
+                          onChange={(newVal) => handleIssueTypeChange(newVal)}
+                          disabled={isSubmitting}
+                          size="sm"
+                          dropdownAlign="right"
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60 gap-2">
+                    <span className="text-zinc-500 shrink-0">Classification</span>
+                    <div className="w-48">
+                      <CustomSelect
+                        id="classification-select"
+                        options={ISSUE_TAXONOMY}
+                        value={ticket.issue_type || "GEN"}
+                        onChange={(newVal) => handleIssueTypeChange(newVal)}
+                        disabled={isSubmitting}
+                        size="sm"
+                        dropdownAlign="right"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {ticket.ticket_sequence != null && (
+                  <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
+                    <span className="text-zinc-500">Issue Sequence</span>
+                    <span className="font-mono-id text-[11px] text-zinc-300">
+                      #{String(ticket.ticket_sequence).padStart(4, "0")}
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/60">
                   <span className="text-zinc-500">Customer</span>

@@ -3,28 +3,67 @@ import { Link, useNavigate } from "react-router-dom";
 import BlurFade from "@/components/magicui/BlurFade";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import CustomSelect from "@/components/ui/CustomSelect";
 import { ticketApi } from "@/services/api";
 import { useTicketsContext } from "@/context/TicketContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Mail, MessageCircle, Globe, Camera } from "lucide-react";
 
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const DEFAULT_BRANDS = [
+  "UrbanFit",
+  "Nova Audio",
+  "Aura D2C",
+  "ThreadCo",
+  "Zen Botanics",
+  "CasaNest",
+  "GlowTheory",
+];
+
+const CHANNEL_OPTIONS = [
+  { value: "Email", label: "Email", icon: <Mail size={13} className="text-blue-400" /> },
+  { value: "WhatsApp", label: "WhatsApp", icon: <MessageCircle size={13} className="text-emerald-400" /> },
+  { value: "Web Portal", label: "Web Portal", icon: <Globe size={13} className="text-purple-400" /> },
+  { value: "Instagram", label: "Instagram", icon: <Camera size={13} className="text-pink-400" /> },
+];
+
 /**
  * Intake form page for creating a new support ticket within AppShell.
  * Performs client-side validation, connects to POST /api/tickets,
- * prevents double-submission, and redirects to the queue on success.
+ * supports custom Brand & Omnichannel attribution, and redirects on success.
  */
 export default function CreateTicketPage() {
   const navigate = useNavigate();
   const nameInputRef = useRef(null);
   const { refresh, addTicketToState } = useTicketsContext();
 
+  const [brands, setBrands] = useState(() => {
+    try {
+      const saved = localStorage.getItem("relaycx_custom_brands");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const combined = [...DEFAULT_BRANDS];
+          parsed.forEach((b) => {
+            if (!combined.includes(b)) combined.push(b);
+          });
+          return combined;
+        }
+      }
+    } catch (e) {
+      // fallback to default
+    }
+    return DEFAULT_BRANDS;
+  });
+
   const [formData, setFormData] = useState({
     customer_name: "",
     customer_email: "",
+    client_brand: "UrbanFit",
+    channel: "Email",
     subject: "",
     description: "",
   });
@@ -93,6 +132,39 @@ export default function CreateTicketPage() {
     }));
   };
 
+  const handleAddBrand = (newBrand) => {
+    const trimmed = newBrand.trim();
+    if (!trimmed) return;
+    if (!brands.some((b) => b.toLowerCase() === trimmed.toLowerCase())) {
+      const next = [...brands, trimmed];
+      setBrands(next);
+      try {
+        const customOnly = next.filter((b) => !DEFAULT_BRANDS.includes(b));
+        localStorage.setItem("relaycx_custom_brands", JSON.stringify(customOnly));
+      } catch (e) {}
+      toast.success(`Brand "${trimmed}" added to roster`);
+    }
+    setFormData((prev) => ({ ...prev, client_brand: trimmed }));
+  };
+
+  const handleRemoveBrand = (brandToRemove) => {
+    const next = brands.filter((b) => b !== brandToRemove);
+    if (next.length === 0) {
+      toast.error("At least one brand must remain in the roster.");
+      return;
+    }
+    setBrands(next);
+    try {
+      const customOnly = next.filter((b) => !DEFAULT_BRANDS.includes(b));
+      localStorage.setItem("relaycx_custom_brands", JSON.stringify(customOnly));
+    } catch (e) {}
+    toast.success(`Brand "${brandToRemove}" removed`);
+
+    if (formData.client_brand === brandToRemove) {
+      setFormData((prev) => ({ ...prev, client_brand: next[0] }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e?.preventDefault?.();
 
@@ -124,6 +196,8 @@ export default function CreateTicketPage() {
       const payload = {
         customer_name: formData.customer_name.trim(),
         customer_email: formData.customer_email.trim().toLowerCase(),
+        client_brand: (formData.client_brand || "UrbanFit").trim(),
+        channel: (formData.channel || "Email").trim(),
         subject: formData.subject.trim(),
         description: formData.description.trim(),
       };
@@ -253,6 +327,48 @@ export default function CreateTicketPage() {
                     {errors.customer_email}
                   </p>
                 )}
+              </div>
+            </div>
+
+            {/* 2-Column Grid: Client Brand & Inbound Channel */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="client_brand"
+                  className="text-xs font-medium text-zinc-300 flex items-center justify-between"
+                >
+                  <span>Client Brand</span>
+                  <span className="text-[10px] text-zinc-500 font-mono">D2C Roster</span>
+                </label>
+                <CustomSelect
+                  id="client_brand"
+                  options={brands}
+                  value={formData.client_brand}
+                  onChange={(val) => setFormData((prev) => ({ ...prev, client_brand: val }))}
+                  allowCustomAdd={true}
+                  customAddPlaceholder="Add brand name..."
+                  onAddCustom={handleAddBrand}
+                  onRemoveCustom={handleRemoveBrand}
+                  canDelete={() => true}
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="channel"
+                  className="text-xs font-medium text-zinc-300 flex items-center justify-between"
+                >
+                  <span>Inbound Channel</span>
+                  <span className="text-[10px] text-zinc-500 font-mono">Omnichannel</span>
+                </label>
+                <CustomSelect
+                  id="channel"
+                  options={CHANNEL_OPTIONS}
+                  value={formData.channel}
+                  onChange={(val) => setFormData((prev) => ({ ...prev, channel: val }))}
+                  disabled={isSubmitting}
+                />
               </div>
             </div>
 

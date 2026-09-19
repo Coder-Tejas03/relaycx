@@ -311,6 +311,66 @@ export function useTicketDetail(ticketId) {
     }
   };
 
+  /**
+   * Correct ticket classification issue type.
+   * Optimistically updates ticket in state and global context, rolls back on error.
+   * @param {string} newIssueType - e.g. "ORD", "PAY", "ACC", etc.
+   */
+  const handleIssueTypeChange = async (newIssueType) => {
+    const currentTicket = ticketRef.current;
+    if (!newIssueType || newIssueType === currentTicket?.issue_type || isSubmittingRef.current) return;
+
+    const previousTicket = currentTicket;
+    const nowIso = new Date().toISOString();
+
+    setActionError(null);
+
+    // 1. Optimistically update local ticket state and global context
+    setTicket((prev) => ({
+      ...prev,
+      issue_type: newIssueType,
+      updated_at: nowIso,
+    }));
+
+    ticketsContext?.updateTicketInState(ticketId, {
+      issue_type: newIssueType,
+      updated_at: nowIso,
+    });
+
+    setIsSubmitting(true);
+
+    // 2. Fire network request
+    try {
+      const result = await ticketApi.updateIssueType(ticketId, newIssueType);
+
+      setTicket((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          issue_type: result.issue_type,
+          updated_at: result.updated_at,
+        };
+      });
+
+      ticketsContext?.updateTicketInState(ticketId, {
+        issue_type: result.issue_type,
+        updated_at: result.updated_at,
+      });
+      ticketsContext?.refresh(true);
+      toast.success(`Classification corrected to ${newIssueType}`);
+    } catch (err) {
+      // 3. Rollback on failure
+      setTicket(previousTicket);
+      ticketsContext?.updateTicketInState(ticketId, {
+        issue_type: previousTicket?.issue_type,
+        updated_at: previousTicket?.updated_at,
+      });
+      toast.error(err.message || "Failed to update classification");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return {
     ticket,
     isLoading,
@@ -324,6 +384,7 @@ export function useTicketDetail(ticketId) {
     handleStatusChange,
     handleAddNote,
     handleAddNoteAndResolve,
+    handleIssueTypeChange,
   };
 }
 

@@ -1,7 +1,6 @@
 """
 Standalone seed script for RelayCX demo dataset.
-Clears existing tickets and notes, then seeds exactly 7 realistic customer tickets
-exercising all workflow states, rich timelines, and search capabilities.
+Clears existing tickets and notes, then seeds the manually-engineered dataset.
 
 Usage:
     cd backend && ../.venv/bin/python seed.py
@@ -32,322 +31,624 @@ def seed_database():
         db.commit()
         print("PASS: Database cleared successfully.")
 
-        # 2. Define realistic timestamps relative to now (UTC)
+        # 2. Define relative timestamps
         now = datetime.now(timezone.utc)
 
-        # Ticket A timestamps (5.5 days old, neglected)
-        t_a_created = now - timedelta(days=5, hours=12)
-
-        # Ticket B timestamps (3 days old, resolved 2 days 2 hours ago)
-        t_b_created = now - timedelta(days=3)
-        t_b_open_to_ip = now - timedelta(days=2, hours=20)
-        t_b_note1 = now - timedelta(days=2, hours=18)
-        t_b_note2 = now - timedelta(days=2, hours=8)
-        t_b_ip_to_closed = now - timedelta(days=2, hours=2)
-        t_b_resolved = now - timedelta(days=2, hours=2)
-
-        # Ticket C timestamps (2 days old, active triage)
-        t_c_created = now - timedelta(days=2)
-        t_c_open_to_ip = now - timedelta(days=1, hours=18)
-        t_c_note1 = now - timedelta(days=1, hours=16)
-        t_c_note2 = now - timedelta(hours=14)
-
-        # Ticket D timestamps (recent intake today, ~1 hour ago)
-        t_d_created = now - timedelta(hours=1, minutes=15)
-
-        # Ticket E timestamps (1 day old, active)
-        t_e_created = now - timedelta(days=1)
-        t_e_open_to_ip = now - timedelta(hours=18)
-        t_e_note1 = now - timedelta(hours=16)
-
-        # Ticket F timestamps (4.5 days old, high urgency open)
-        t_f_created = now - timedelta(days=4, hours=14)
-
-        # Ticket G timestamps (2.5 days old, webhook search keyword, resolved 1 day ago)
-        t_g_created = now - timedelta(days=2, hours=12)
-        t_g_open_to_ip = now - timedelta(days=2, hours=2)
-        t_g_note1 = now - timedelta(days=1, hours=18)
-        t_g_ip_to_closed = now - timedelta(days=1, hours=2)
-        t_g_resolved = now - timedelta(days=1, hours=2)
-
-        # 3. Construct the 7 realistic demo tickets
+        # ---------------------------------------------------------------------------
+        # TICKET DATA
+        # Add manually-engineered tickets here, one at a time.
+        # Each entry must follow the structure:
+        #
+        # {
+        #     "ticket": Ticket(
+        #         ticket_id="TKT-{CLIENT3}-{ISSUE3}-{SEQ4}",
+        #         customer_name="...",
+        #         customer_email="...",
+        #         subject="...",
+        #         description="...",
+        #         status="Open" | "In Progress" | "Closed",
+        #         client_brand="...",
+        #         channel="Email" | "WhatsApp" | "Web Portal" | "Instagram",
+        #         intake_issue_type="...",   # 3-char code at ticket creation
+        #         issue_type="...",          # 3-char code (may be updated post-triage)
+        #         ticket_sequence=N,         # Per-brand per-issue sequence number
+        #         created_at=<datetime>,
+        #         updated_at=<datetime>,
+        #     ),
+        #     "notes": [
+        #         Note(ticket_id="TKT-...", note_text="...", event_type="TICKET_CREATED", created_at=<datetime>),
+        #         Note(ticket_id="TKT-...", note_text="Open → In Progress", event_type="STATUS_CHANGE", created_at=<datetime>),
+        #         Note(ticket_id="TKT-...", note_text="...", event_type="NOTE_ADDED", created_at=<datetime>),
+        #         Note(ticket_id="TKT-...", note_text="In Progress → Closed", event_type="STATUS_CHANGE", created_at=<datetime>),
+        #     ],
+        # }
+        # ---------------------------------------------------------------------------
         tickets_data = [
-            # A: Zara Patel | Open | 5.5 days old | 0 notes (neglected inquiry)
+            # =======================================================================
+            # TICKET 01 — Aditya Joshi | Damaged Delivery | Zen Botanics
+            # =======================================================================
             {
                 "ticket": Ticket(
-                    ticket_id="TKT-A82F10",
-                    customer_name="Zara Patel",
-                    customer_email="zara.patel@finscale.io",
-                    subject="Webhook failure on refund event",
+                    ticket_id="TKT-ZEN-ORD-0001",
+                    customer_name="Aditya Joshi",
+                    customer_email="aditya.joshi@zenbotanics.com",
+                    subject="Organic facial serum bottle arrived leaking",
                     description=(
-                        "Refund webhook events are failing intermittently with HTTP 500 internal server "
-                        "error on our secondary merchant endpoint. Refunds are processed in Stripe, but "
-                        "the corresponding customer ledger state does not synchronize in our internal dashboard."
+                        "My order was delivered today, but the Organic Facial Serum bottle "
+                        "was leaking inside the package. The dropper seal looks broken and "
+                        "some of the serum has spilled into the box. I would like to know "
+                        "if I can get a replacement or a refund."
                     ),
-                    status="Open",
-                    created_at=t_a_created,
-                    updated_at=t_a_created,
-                ),
-                "notes": [],
-            },
-            # B: Aarav Sharma | Closed | 3 days ago | 3 agent notes + 2 status changes + 1 intake
-            {
-                "ticket": Ticket(
-                    ticket_id="TKT-B41E93",
-                    customer_name="Aarav Sharma",
-                    customer_email="aarav.sharma@payflow.tech",
-                    subject="Cannot access billing dashboard",
-                    description=(
-                        "When attempting to navigate to Settings > Billing, the screen hangs indefinitely "
-                        "on a loading spinner. Multiple organization admins are experiencing the exact same issue "
-                        "since yesterday morning after our team domain migration."
-                    ),
-                    status="Closed",
-                    created_at=t_b_created,
-                    updated_at=t_b_resolved,
+                    status="In Progress",
+                    client_brand="Zen Botanics",
+                    channel="WhatsApp",
+                    intake_issue_type="ORD",
+                    issue_type="ORD",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(minutes=45),
+                    updated_at=now - timedelta(minutes=15),
                 ),
                 "notes": [
                     Note(
-                        ticket_id="TKT-B41E93",
-                        note_text="Ticket intake created via customer support portal.",
+                        ticket_id="TKT-ZEN-ORD-0001",
+                        note_text="Ticket intake created via WhatsApp.",
                         event_type="TICKET_CREATED",
-                        created_at=t_b_created,
+                        created_at=now - timedelta(minutes=45),
                     ),
                     Note(
-                        ticket_id="TKT-B41E93",
+                        ticket_id="TKT-ZEN-ORD-0001",
                         note_text="Open → In Progress",
                         event_type="STATUS_CHANGE",
-                        created_at=t_b_open_to_ip,
+                        created_at=now - timedelta(minutes=25),
                     ),
                     Note(
-                        ticket_id="TKT-B41E93",
-                        note_text=(
-                            "Investigated billing gateway logs. Identified stale session authorization tokens "
-                            "failing validation against the payment provider API. Working with core auth team "
-                            "on session cache invalidation."
-                        ),
+                        ticket_id="TKT-ZEN-ORD-0001",
+                        note_text="Customer reported leakage immediately after delivery and requested a replacement or refund.",
                         event_type="NOTE_ADDED",
-                        created_at=t_b_note1,
-                    ),
-                    Note(
-                        ticket_id="TKT-B41E93",
-                        note_text=(
-                            "Session cache cluster purged and backend token refresh logic patched. Verified dashboard "
-                            "loads across test accounts in staging."
-                        ),
-                        event_type="NOTE_ADDED",
-                        created_at=t_b_note2,
-                    ),
-                    Note(
-                        ticket_id="TKT-B41E93",
-                        note_text="In Progress → Closed",
-                        event_type="STATUS_CHANGE",
-                        created_at=t_b_ip_to_closed,
-                    ),
-                    Note(
-                        ticket_id="TKT-B41E93",
-                        note_text=(
-                            "Customer confirmed full dashboard access has been restored on all admin accounts. "
-                            "Verified zero lingering 401/500 errors in Datadog. Resolving ticket."
-                        ),
-                        event_type="NOTE_ADDED",
-                        created_at=t_b_resolved,
+                        created_at=now - timedelta(minutes=15),
                     ),
                 ],
             },
-            # C: Meera Iyer | In Progress | 2 days ago | 2 notes + 1 status change + 1 intake
+
+            # -----------------------------------------------------------------------
+            # PRIOR HISTORY TICKET 1: Aditya Joshi (4 months ago, Closed)
+            # -----------------------------------------------------------------------
             {
                 "ticket": Ticket(
-                    ticket_id="TKT-C73D5A",
+                    ticket_id="TKT-ZEN-PRD-0001",
+                    customer_name="Aditya Joshi",
+                    customer_email="aditya.joshi@zenbotanics.com",
+                    subject="Product availability question",
+                    description="Inquiring whether Organic Facial Serum 50ml will be restocked this quarter.",
+                    status="Closed",
+                    client_brand="Zen Botanics",
+                    channel="Email",
+                    intake_issue_type="PRD",
+                    issue_type="PRD",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(days=120),
+                    updated_at=now - timedelta(days=119),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-ZEN-PRD-0001",
+                        note_text="Ticket intake created via email support.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(days=120),
+                    ),
+                    Note(
+                        ticket_id="TKT-ZEN-PRD-0001",
+                        note_text="Confirmed restock timeline with inventory team. Customer notified.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(days=119, hours=20),
+                    ),
+                    Note(
+                        ticket_id="TKT-ZEN-PRD-0001",
+                        note_text="In Progress → Closed",
+                        event_type="STATUS_CHANGE",
+                        created_at=now - timedelta(days=119),
+                    ),
+                ],
+            },
+
+            # -----------------------------------------------------------------------
+            # PRIOR HISTORY TICKET 2: Aditya Joshi (7 months ago, Closed)
+            # -----------------------------------------------------------------------
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-ZEN-ACC-0001",
+                    customer_name="Aditya Joshi",
+                    customer_email="aditya.joshi@zenbotanics.com",
+                    subject="Address update request",
+                    description="Requested changing default delivery address prior to next renewal.",
+                    status="Closed",
+                    client_brand="Zen Botanics",
+                    channel="Web Portal",
+                    intake_issue_type="ACC",
+                    issue_type="ACC",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(days=210),
+                    updated_at=now - timedelta(days=209),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-ZEN-ACC-0001",
+                        note_text="Ticket intake created via web portal.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(days=210),
+                    ),
+                    Note(
+                        ticket_id="TKT-ZEN-ACC-0001",
+                        note_text="Shipping profile updated successfully in Zen Botanics customer database.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(days=209, hours=22),
+                    ),
+                    Note(
+                        ticket_id="TKT-ZEN-ACC-0001",
+                        note_text="In Progress → Closed",
+                        event_type="STATUS_CHANGE",
+                        created_at=now - timedelta(days=209),
+                    ),
+                ],
+            },
+
+            # =======================================================================
+            # TICKET 02 — Meera Iyer | Payment Deducted, Order Not Confirmed | Aura D2C
+            # =======================================================================
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-AUR-PAY-0001",
                     customer_name="Meera Iyer",
-                    customer_email="meera.iyer@cloudcart.dev",
-                    subject="Payment processing delay on checkout",
+                    customer_email="meera.iyer@aurad2c.com",
+                    subject="Payment deducted but order is still not confirmed",
                     description=(
-                        "Customers reporting checkout confirmation taking upwards of 45 seconds on Stripe credit "
-                        "card transactions. 3 high-value customers abandoned checkout sessions today."
+                        "I placed an order for the Rose Glow Hydration Kit this morning. "
+                        "The ₹1,899 payment was deducted from my UPI account, but I never "
+                        "received an order confirmation. The checkout page showed an error "
+                        "after the payment was completed. Please confirm whether my order "
+                        "went through or if I will receive a refund."
                     ),
                     status="In Progress",
-                    created_at=t_c_created,
-                    updated_at=t_c_note2,
+                    client_brand="Aura D2C",
+                    channel="WhatsApp",
+                    intake_issue_type="PAY",
+                    issue_type="PAY",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(hours=1, minutes=10),
+                    updated_at=now - timedelta(minutes=20),
                 ),
                 "notes": [
                     Note(
-                        ticket_id="TKT-C73D5A",
-                        note_text="Ticket intake created via priority merchant support queue.",
+                        ticket_id="TKT-AUR-PAY-0001",
+                        note_text="Ticket intake created via WhatsApp.",
                         event_type="TICKET_CREATED",
-                        created_at=t_c_created,
+                        created_at=now - timedelta(hours=1, minutes=10),
                     ),
                     Note(
-                        ticket_id="TKT-C73D5A",
+                        ticket_id="TKT-AUR-PAY-0001",
                         note_text="Open → In Progress",
                         event_type="STATUS_CHANGE",
-                        created_at=t_c_open_to_ip,
+                        created_at=now - timedelta(minutes=50),
                     ),
                     Note(
-                        ticket_id="TKT-C73D5A",
-                        note_text=(
-                            "Reviewed egress latency to Stripe webhook ingestion endpoints. Observing p99 network "
-                            "spikes between us-east-1 and payment gateway. Escrow transaction queues backing up."
-                        ),
+                        ticket_id="TKT-AUR-PAY-0001",
+                        note_text="Customer confirmed that the UPI amount was deducted successfully.",
                         event_type="NOTE_ADDED",
-                        created_at=t_c_note1,
+                        created_at=now - timedelta(minutes=40),
                     ),
                     Note(
-                        ticket_id="TKT-C73D5A",
-                        note_text=(
-                            "Engaged network reliability team. Routing checkout payloads through alternate edge proxy. "
-                            "Latency dropped to 420ms; monitoring queue drain."
-                        ),
+                        ticket_id="TKT-AUR-PAY-0001",
+                        note_text="Payment transaction found, but order confirmation was not completed.",
                         event_type="NOTE_ADDED",
-                        created_at=t_c_note2,
+                        created_at=now - timedelta(minutes=20),
                     ),
                 ],
             },
-            # D: Rohan Kapoor | Open | ~1 hour ago (today) | 0 notes (new intake)
+
+            # -----------------------------------------------------------------------
+            # PRIOR HISTORY TICKET 1: Meera Iyer (2 months ago, Closed)
+            # -----------------------------------------------------------------------
             {
                 "ticket": Ticket(
-                    ticket_id="TKT-D19C48",
-                    customer_name="Rohan Kapoor",
-                    customer_email="rohan.kapoor@novabanking.com",
-                    subject="Account locked after failed 2FA attempts",
-                    description=(
-                        "User entered incorrect SMS verification codes 5 times after changing mobile devices. "
-                        "Account is currently in hard lockout. Customer has provided photo verification of corporate identity."
-                    ),
-                    status="Open",
-                    created_at=t_d_created,
-                    updated_at=t_d_created,
-                ),
-                "notes": [],
-            },
-            # E: Priya Nair | In Progress | 1 day ago | 1 note + 1 status change + 1 intake
-            {
-                "ticket": Ticket(
-                    ticket_id="TKT-E62B07",
-                    customer_name="Priya Nair",
-                    customer_email="priya.nair@datalens.ai",
-                    subject="CSV export returns empty file for date range filter",
-                    description=(
-                        "When exporting analytics reports for custom date ranges spanning more than 30 days, "
-                        "the generated CSV file downloads with 0 bytes. Narrow date ranges (1-7 days) export properly."
-                    ),
-                    status="In Progress",
-                    created_at=t_e_created,
-                    updated_at=t_e_note1,
-                ),
-                "notes": [
-                    Note(
-                        ticket_id="TKT-E62B07",
-                        note_text="Ticket intake created via standard email support channel.",
-                        event_type="TICKET_CREATED",
-                        created_at=t_e_created,
-                    ),
-                    Note(
-                        ticket_id="TKT-E62B07",
-                        note_text="Open → In Progress",
-                        event_type="STATUS_CHANGE",
-                        created_at=t_e_open_to_ip,
-                    ),
-                    Note(
-                        ticket_id="TKT-E62B07",
-                        note_text=(
-                            "Replicated export query on staging replica. Queries exceeding 30-day window hit Lambda "
-                            "execution timeout of 15 seconds. Need to offload large batch CSV exports to async background worker."
-                        ),
-                        event_type="NOTE_ADDED",
-                        created_at=t_e_note1,
-                    ),
-                ],
-            },
-            # F: Dev Malhotra | Open | 4.5 days ago | 0 notes (high urgency sitting idle)
-            {
-                "ticket": Ticket(
-                    ticket_id="TKT-F95A31",
-                    customer_name="Dev Malhotra",
-                    customer_email="dev.malhotra@hypergrid.net",
-                    subject="API rate limit errors causing production outage",
-                    description=(
-                        "Experiencing continuous HTTP 429 Too Many Requests on the /v1/telemetry endpoint during "
-                        "peak production traffic hours. Ingestion backlog currently exceeds 120,000 telemetry events."
-                    ),
-                    status="Open",
-                    created_at=t_f_created,
-                    updated_at=t_f_created,
-                ),
-                "notes": [],
-            },
-            # G: Siya Shah | Closed | 2.5 days ago | Webhook search keyword, complete journey, resolved 1 day ago
-            {
-                "ticket": Ticket(
-                    ticket_id="TKT-G38D64",
-                    customer_name="Siya Shah",
-                    customer_email="siya.shah@eventmesh.org",
-                    subject="Webhook endpoint returning 400 on payment.completed event",
-                    description=(
-                        "Our production webhook receiver is failing with HTTP 400 Bad Request whenever payment.completed "
-                        "event payloads are delivered. Suspect payload schema discrepancy with latest API release."
-                    ),
+                    ticket_id="TKT-AUR-ORD-0001",
+                    customer_name="Meera Iyer",
+                    customer_email="meera.iyer@aurad2c.com",
+                    subject="Order delivery delay",
+                    description="Customer inquiring about transit status for shipment delayed by local courier hub backlog.",
                     status="Closed",
-                    created_at=t_g_created,
-                    updated_at=t_g_resolved,
+                    client_brand="Aura D2C",
+                    channel="Email",
+                    intake_issue_type="ORD",
+                    issue_type="ORD",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(days=60),
+                    updated_at=now - timedelta(days=58),
                 ),
                 "notes": [
                     Note(
-                        ticket_id="TKT-G38D64",
-                        note_text="Ticket intake created via developer API integrations channel.",
+                        ticket_id="TKT-AUR-ORD-0001",
+                        note_text="Ticket intake created via email support.",
                         event_type="TICKET_CREATED",
-                        created_at=t_g_created,
+                        created_at=now - timedelta(days=60),
                     ),
                     Note(
-                        ticket_id="TKT-G38D64",
+                        ticket_id="TKT-AUR-ORD-0001",
                         note_text="Open → In Progress",
                         event_type="STATUS_CHANGE",
-                        created_at=t_g_open_to_ip,
+                        created_at=now - timedelta(days=59, hours=18),
                     ),
                     Note(
-                        ticket_id="TKT-G38D64",
-                        note_text=(
-                            "Investigated webhook delivery logs. The payment.completed event payload schema introduced "
-                            "an object array for line_items instead of string IDs in v2.4. Customer webhook parser expected v2.3 schema."
-                        ),
+                        ticket_id="TKT-AUR-ORD-0001",
+                        note_text="Escalated to logistics partner; delivery completed.",
                         event_type="NOTE_ADDED",
-                        created_at=t_g_note1,
+                        created_at=now - timedelta(days=58, hours=4),
                     ),
                     Note(
-                        ticket_id="TKT-G38D64",
+                        ticket_id="TKT-AUR-ORD-0001",
                         note_text="In Progress → Closed",
                         event_type="STATUS_CHANGE",
-                        created_at=t_g_ip_to_closed,
+                        created_at=now - timedelta(days=58),
+                    ),
+                ],
+            },
+
+            # -----------------------------------------------------------------------
+            # PRIOR HISTORY TICKET 2: Meera Iyer (5 months ago, Closed)
+            # -----------------------------------------------------------------------
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-AUR-PRD-0001",
+                    customer_name="Meera Iyer",
+                    customer_email="meera.iyer@aurad2c.com",
+                    subject="Product availability question",
+                    description="Customer asking for ingredient formulation details and availability of 30ml travel size.",
+                    status="Closed",
+                    client_brand="Aura D2C",
+                    channel="Web Portal",
+                    intake_issue_type="PRD",
+                    issue_type="PRD",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(days=150),
+                    updated_at=now - timedelta(days=149),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-AUR-PRD-0001",
+                        note_text="Ticket intake created via web portal.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(days=150),
                     ),
                     Note(
-                        ticket_id="TKT-G38D64",
-                        note_text=(
-                            "Customer updated their parser to support v2.4 webhook schema. Resent 14 failed webhook deliveries; "
-                            "all returned HTTP 200 OK. Resolving ticket."
-                        ),
+                        ticket_id="TKT-AUR-PRD-0001",
+                        note_text="Product specialist provided botanical ingredient sheet.",
                         event_type="NOTE_ADDED",
-                        created_at=t_g_resolved,
+                        created_at=now - timedelta(days=149, hours=20),
+                    ),
+                    Note(
+                        ticket_id="TKT-AUR-PRD-0001",
+                        note_text="In Progress → Closed",
+                        event_type="STATUS_CHANGE",
+                        created_at=now - timedelta(days=149),
+                    ),
+                ],
+            },
+
+            # =======================================================================
+            # TICKET 03 — Rohan Kapoor | Wrong Item Delivered | UrbanFit
+            # =======================================================================
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-URB-ORD-0001",
+                    customer_name="Rohan Kapoor",
+                    customer_email="rohan.kapoor@urbanfit.in",
+                    subject="Received the wrong product in my UrbanFit order",
+                    description=(
+                        "My order was delivered today, but I received a pair of UrbanFit "
+                        "Core Training Shorts instead of the AeroDry Joggers that I ordered. "
+                        "The package label has my name and order number, but the product "
+                        "inside is completely different. Please arrange a replacement with "
+                        "the correct item."
+                    ),
+                    status="Open",
+                    client_brand="UrbanFit",
+                    channel="Email",
+                    intake_issue_type="ORD",
+                    issue_type="ORD",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(hours=2),
+                    updated_at=now - timedelta(minutes=40),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-URB-ORD-0001",
+                        note_text="Ticket intake created via email support channel.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(hours=2),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-ORD-0001",
+                        note_text="Customer reported incorrect item immediately after delivery.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(hours=1, minutes=45),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-ORD-0001",
+                        note_text="Order and shipment details matched the customer's account.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(hours=1, minutes=15),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-ORD-0001",
+                        note_text="Fulfillment discrepancy identified; replacement requested.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(minutes=40),
+                    ),
+                ],
+            },
+
+            # -----------------------------------------------------------------------
+            # PRIOR HISTORY TICKET 1: Rohan Kapoor (6 weeks ago, Closed)
+            # -----------------------------------------------------------------------
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-URB-PRD-0001",
+                    customer_name="Rohan Kapoor",
+                    customer_email="rohan.kapoor@urbanfit.in",
+                    subject="Size exchange for previous order",
+                    description="Customer requested exchanging size M joggers for size L from prior seasonal drop.",
+                    status="Closed",
+                    client_brand="UrbanFit",
+                    channel="Email",
+                    intake_issue_type="PRD",
+                    issue_type="PRD",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(days=42),
+                    updated_at=now - timedelta(days=40),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-URB-PRD-0001",
+                        note_text="Ticket intake created via email support.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(days=42),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-PRD-0001",
+                        note_text="Open → In Progress",
+                        event_type="STATUS_CHANGE",
+                        created_at=now - timedelta(days=41, hours=18),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-PRD-0001",
+                        note_text="Reverse pickup completed; replacement dispatched.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(days=40, hours=6),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-PRD-0001",
+                        note_text="In Progress → Closed",
+                        event_type="STATUS_CHANGE",
+                        created_at=now - timedelta(days=40),
+                    ),
+                ],
+            },
+
+            # -----------------------------------------------------------------------
+            # PRIOR HISTORY TICKET 2: Rohan Kapoor (4 months ago, Closed)
+            # -----------------------------------------------------------------------
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-URB-GEN-0001",
+                    customer_name="Rohan Kapoor",
+                    customer_email="rohan.kapoor@urbanfit.in",
+                    subject="Delivery status enquiry",
+                    description="Customer inquiring about courier transit timeline during monsoon weather advisory.",
+                    status="Closed",
+                    client_brand="UrbanFit",
+                    channel="WhatsApp",
+                    intake_issue_type="GEN",
+                    issue_type="GEN",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(days=120),
+                    updated_at=now - timedelta(days=119),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-URB-GEN-0001",
+                        note_text="Ticket intake created via WhatsApp.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(days=120),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-GEN-0001",
+                        note_text="Delivered confirmed by Delhivery hub. Resolved.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(days=119, hours=22),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-GEN-0001",
+                        note_text="Open → Closed",
+                        event_type="STATUS_CHANGE",
+                        created_at=now - timedelta(days=119),
+                    ),
+                ],
+            },
+
+            # -----------------------------------------------------------------------
+            # PRIOR HISTORY TICKET 3: Rohan Kapoor (8 months ago, Closed)
+            # -----------------------------------------------------------------------
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-URB-PRD-0002",
+                    customer_name="Rohan Kapoor",
+                    customer_email="rohan.kapoor@urbanfit.in",
+                    subject="Product availability question",
+                    description="Customer inquiring about restock date for heavyweight hoodie drop.",
+                    status="Closed",
+                    client_brand="UrbanFit",
+                    channel="Email",
+                    intake_issue_type="PRD",
+                    issue_type="PRD",
+                    ticket_sequence=2,
+                    created_at=now - timedelta(days=240),
+                    updated_at=now - timedelta(days=239),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-URB-PRD-0002",
+                        note_text="Ticket intake created via email.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(days=240),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-PRD-0002",
+                        note_text="Catalog restock schedule shared with customer.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(days=239, hours=12),
+                    ),
+                    Note(
+                        ticket_id="TKT-URB-PRD-0002",
+                        note_text="Open → Closed",
+                        event_type="STATUS_CHANGE",
+                        created_at=now - timedelta(days=239),
+                    ),
+                ],
+            },
+
+            # =======================================================================
+            # TICKET 05 — Arjun Mehta | Delayed Delivery | CasaNest
+            # =======================================================================
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-CAS-ORD-0001",
+                    customer_name="Arjun Mehta",
+                    customer_email="arjun.mehta@gmail.com",
+                    subject="My order is delayed and the delivery date has already passed",
+                    description=(
+                        "I ordered the CasaNest Ceramic Cookware Set last week and the "
+                        "estimated delivery date was yesterday. The tracking page has not "
+                        "updated since the package was picked up, and the order still hasn't "
+                        "arrived. Please check where the shipment is and let me know when I "
+                        "can expect delivery."
+                    ),
+                    status="Open",
+                    client_brand="CasaNest",
+                    channel="Web Portal",
+                    intake_issue_type="ORD",
+                    issue_type="ORD",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(hours=3),
+                    updated_at=now - timedelta(minutes=50),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-CAS-ORD-0001",
+                        note_text="Ticket intake created via web portal.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(hours=3),
+                    ),
+                    Note(
+                        ticket_id="TKT-CAS-ORD-0001",
+                        note_text="Customer reported that the estimated delivery date has passed.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(hours=2, minutes=30),
+                    ),
+                    Note(
+                        ticket_id="TKT-CAS-ORD-0001",
+                        note_text="Shipment tracking has not updated since pickup.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(hours=1, minutes=45),
+                    ),
+                    Note(
+                        ticket_id="TKT-CAS-ORD-0001",
+                        note_text="Customer requested an updated delivery estimate.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(minutes=50),
+                    ),
+                ],
+            },
+
+            # =======================================================================
+            # TICKET 06 — Sneha Kulkarni | Refund Not Received | GlowTheory
+            # =======================================================================
+            {
+                "ticket": Ticket(
+                    ticket_id="TKT-GLO-PAY-0001",
+                    customer_name="Sneha Kulkarni",
+                    customer_email="sneha.kulkarni@gmail.com",
+                    subject="My refund has not been credited yet",
+                    description=(
+                        "I returned the GlowTheory Vitamin C Brightening Serum because I "
+                        "received the wrong variant. The return was picked up a few days ago, "
+                        "and I was told that the refund had been initiated, but I still "
+                        "haven't received the money in my bank account. Please check the "
+                        "refund status and let me know when I should expect the amount."
+                    ),
+                    status="In Progress",
+                    client_brand="GlowTheory",
+                    channel="Email",
+                    intake_issue_type="PAY",
+                    issue_type="PAY",
+                    ticket_sequence=1,
+                    created_at=now - timedelta(hours=2, minutes=30),
+                    updated_at=now - timedelta(minutes=20),
+                ),
+                "notes": [
+                    Note(
+                        ticket_id="TKT-GLO-PAY-0001",
+                        note_text="Ticket intake created via email support channel.",
+                        event_type="TICKET_CREATED",
+                        created_at=now - timedelta(hours=2, minutes=30),
+                    ),
+                    Note(
+                        ticket_id="TKT-GLO-PAY-0001",
+                        note_text="Open → In Progress",
+                        event_type="STATUS_CHANGE",
+                        created_at=now - timedelta(hours=1, minutes=45),
+                    ),
+                    Note(
+                        ticket_id="TKT-GLO-PAY-0001",
+                        note_text="Customer confirmed that the return shipment was already picked up.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(hours=1, minutes=30),
+                    ),
+                    Note(
+                        ticket_id="TKT-GLO-PAY-0001",
+                        note_text="Refund was initiated after return verification.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(minutes=50),
+                    ),
+                    Note(
+                        ticket_id="TKT-GLO-PAY-0001",
+                        note_text="Customer reported that the refund has not yet appeared in the original payment account.",
+                        event_type="NOTE_ADDED",
+                        created_at=now - timedelta(minutes=20),
                     ),
                 ],
             },
         ]
 
-        # 4. Insert all tickets and notes into database
-        print("[2/3] Inserting 7 realistic tickets and activity timelines...")
-        for item in tickets_data:
-            ticket = item["ticket"]
-            notes = item["notes"]
-            db.add(ticket)
-            db.flush()  # Ensure ticket is persisted before attaching notes
+        # 3. Insert all tickets and notes into database
+        ticket_count = len(tickets_data)
+        print(f"[2/3] Inserting {ticket_count} ticket(s) and activity timelines...")
 
-            for note in notes:
-                db.add(note)
+        if ticket_count == 0:
+            print("INFO: No tickets defined yet. Database is clean and ready.")
+        else:
+            for item in tickets_data:
+                ticket = item["ticket"]
+                notes = item["notes"]
+                db.add(ticket)
+                db.flush()  # Ensure ticket is persisted before attaching notes
 
-        db.commit()
-        print("PASS: Inserted 7 tickets and all associated activity notes.")
+                for note in notes:
+                    db.add(note)
 
-        # 5. Verification & Summary Output
-        print("\n[3/3] Verifying seeded dataset:")
+            db.commit()
+            print(f"PASS: Inserted {ticket_count} ticket(s) and all associated activity notes.")
+
+        # 4. Verification & Summary Output
+        print("\n[3/3] Verifying dataset:")
         all_tickets = db.query(Ticket).all()
         all_notes = db.query(Note).all()
 
@@ -355,19 +656,31 @@ def seed_database():
         ip_tickets = [t for t in all_tickets if t.status == "In Progress"]
         closed_tickets = [t for t in all_tickets if t.status == "Closed"]
 
-        print(f"  • Total tickets in DB: {len(all_tickets)} (Expected: 7)")
-        print(f"  • Total notes in DB: {len(all_notes)}")
-        print(f"  • Open tickets ({len(open_tickets)}): {[t.ticket_id for t in open_tickets]}")
-        print(f"  • In Progress tickets ({len(ip_tickets)}): {[t.ticket_id for t in ip_tickets]}")
-        print(f"  • Closed tickets ({len(closed_tickets)}): {[t.ticket_id for t in closed_tickets]}")
+        print(f"  • Total tickets in DB: {len(all_tickets)}")
+        print(f"  • Total notes in DB:   {len(all_notes)}")
+        print(f"  • Open ({len(open_tickets)}): {[t.ticket_id for t in open_tickets]}")
+        print(f"  • In Progress ({len(ip_tickets)}): {[t.ticket_id for t in ip_tickets]}")
+        print(f"  • Closed ({len(closed_tickets)}): {[t.ticket_id for t in closed_tickets]}")
 
-        assert len(all_tickets) == 7, f"Expected exactly 7 tickets, found {len(all_tickets)}"
-        assert len(open_tickets) == 3, f"Expected 3 Open tickets, found {len(open_tickets)}"
-        assert len(ip_tickets) == 2, f"Expected 2 In Progress tickets, found {len(ip_tickets)}"
-        assert len(closed_tickets) == 2, f"Expected 2 Closed tickets, found {len(closed_tickets)}"
+        # Validate structured ID format for any tickets that do exist
+        for t in all_tickets:
+            parts = t.ticket_id.split("-")
+            assert len(parts) == 4, f"Invalid ticket_id format: {t.ticket_id}"
+            assert parts[0] == "TKT", f"Prefix must be TKT: {t.ticket_id}"
+            assert len(parts[1]) == 3 and parts[1].isupper(), f"Client code must be 3 uppercase chars: {t.ticket_id}"
+            assert len(parts[2]) == 3 and parts[2].isupper(), f"Issue code must be 3 uppercase chars: {t.ticket_id}"
+            assert len(parts[3]) == 4 and parts[3].isdigit(), f"Sequence must be 4 digits: {t.ticket_id}"
+            assert t.issue_type is not None and len(t.issue_type) >= 3, f"Missing issue_type: {t.ticket_id}"
+            assert t.intake_issue_type is not None and len(t.intake_issue_type) >= 3, f"Missing intake_issue_type: {t.ticket_id}"
+            assert t.ticket_sequence is not None and t.ticket_sequence >= 1, f"Missing ticket_sequence: {t.ticket_id}"
+
+        # Verify all notes reference valid tickets
+        valid_ticket_ids = {t.ticket_id for t in all_tickets}
+        for n in all_notes:
+            assert n.ticket_id in valid_ticket_ids, f"Orphaned note: {n.ticket_id}"
 
         print("\n" + "=" * 70)
-        print("SUCCESS: RelayCX demo dataset seeded cleanly! Ready for showcase.")
+        print("SUCCESS: RelayCX database is clean. Ready for new dataset.")
         print("=" * 70)
 
     except Exception as e:

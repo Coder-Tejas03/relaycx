@@ -2,6 +2,15 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import StatusBadge from "./StatusBadge";
 import { formatRelativeTime, formatDateTime } from "@/lib/utils";
+import { Mail, MessageCircle, Globe, Camera } from "lucide-react";
+
+function renderChannelIcon(channel) {
+  const c = (channel || "").toLowerCase();
+  if (c.includes("whatsapp")) return <MessageCircle size={11} className="text-emerald-400 shrink-0" />;
+  if (c.includes("web") || c.includes("portal")) return <Globe size={11} className="text-purple-400 shrink-0" />;
+  if (c.includes("insta")) return <Camera size={11} className="text-pink-400 shrink-0" />;
+  return <Mail size={11} className="text-blue-400 shrink-0" />;
+}
 
 /**
  * Single interactive row in the ticket queue table.
@@ -45,19 +54,36 @@ export default function TicketRow({ ticket }) {
         {ticket.ticket_id}
       </td>
 
-      {/* Customer Avatar + Name & Email */}
+      {/* Customer Avatar + Name & Email + Brand/Channel Attribution */}
       <td className="py-3 px-4 whitespace-nowrap">
         <div className="flex items-center gap-2.5">
-          <div className="size-6 rounded-full bg-zinc-900 border border-zinc-700/80 flex items-center justify-center text-[10px] font-mono font-medium text-zinc-300 shrink-0">
+          <div className="size-7 rounded-full bg-zinc-900 border border-zinc-700/80 flex items-center justify-center text-[10px] font-mono font-medium text-zinc-300 shrink-0">
             {initials}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors truncate max-w-[160px]">
-              {ticket.customer_name}
-            </span>
-            <span className="text-xs text-zinc-500 font-mono-id truncate max-w-[160px]">
-              {ticket.customer_email}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors truncate max-w-[150px]">
+                {ticket.customer_name}
+              </span>
+              {ticket.client_brand && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-zinc-800/90 border border-zinc-700/60 text-zinc-300 tracking-tight">
+                  {ticket.client_brand}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-xs text-zinc-500 font-mono-id truncate max-w-[140px]">
+                {ticket.customer_email}
+              </span>
+              {ticket.channel && (
+                <span
+                  className="inline-flex items-center gap-1 text-[10px] text-zinc-400 shrink-0"
+                  title={`Inbound via ${ticket.channel}`}
+                >
+                  {renderChannelIcon(ticket.channel)}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </td>
