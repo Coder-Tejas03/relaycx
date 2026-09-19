@@ -59,6 +59,10 @@ ISSUE_TAXONOMY: dict[str, list[tuple[str, int]]] = {
     "ORD": [
         ("order", 2), ("delivery", 2), ("shipment", 2), ("shipping", 2),
         ("package", 2), ("tracking", 2), ("missing item", 2),
+        ("parcel", 2), ("courier", 2), ("arrived", 2), ("delivered", 2),
+        ("damaged", 2), ("damage", 2), ("cracked", 2), ("leaking", 2),
+        ("shattered", 2), ("broken bottle", 2), ("replacement", 2),
+        ("dispatch", 2), ("transit", 2), ("delay", 2), ("delayed", 2),
     ],
     "TEC": [
         ("crash", 2), ("bug", 2), ("error", 1), ("malfunction", 2),
